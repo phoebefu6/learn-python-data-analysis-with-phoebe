@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 8 · From insight to a shareable report - learn python data analysis with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-python-data-analysis-with-phoebe</a> / Session 8 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Python Data Analysis with Phoebe · Session 8 of 8</div>
+    <h1>From insight to a <span class="accent">shareable report</span></h1>
+    <p class="sub">Analysis only matters when someone else can act on it. Today you turn seven sessions of work into findings a human wants to read, add a simple model that predicts salary from role, location, and experience, and package the whole thing into a portfolio piece you'd be proud to post. This is the finale - it ties everything together.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Hardest</span>
+      <span class="chip audience">Builders</span>
+      <span class="chip audience">Capstone</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build the report</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>The last mile is the whole point</h2>
+    </div>
+    <p class="lede">Seven sessions in, you can load, clean, join, group, and chart 124,000 real job postings. That's real skill - but a notebook full of true tables is not an analysis anyone will read. The last mile is turning that work into <strong>findings a human wants to act on</strong>, a <strong>model that makes a testable prediction</strong>, and a <strong>package you can hand to a stranger</strong>. That last mile is where analysts become analysts people trust. Today you walk it end to end and finish with something you can put your name on.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">The project: the data job market</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A finished mini-report - five headline findings, five clean charts, and a salary model that predicts pay from role, location, and experience - reproducible top to bottom, exported to HTML, and drafted into a LinkedIn post with your name on it. The portfolio piece the whole course was building toward.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: NUMBERS TO FINDINGS ============ -->
+  <section class="section" id="findings">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers turning output into insight (McKinney ch13)</span>
+      <h2>From numbers to findings <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Output is what the computer prints. A <strong>finding</strong> is what a human should do about it. The gap between the two is the single most valuable thing you'll learn today - and it's not code.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A funnel from 124k raw rows down to five findings and one headline">
+        <style>
+          .fnT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .fnS { font: 400 12px Inter, sans-serif; fill: #FFFFFF; opacity: .9; }
+          .fnX { font: 400 12px Inter, sans-serif; fill: #5A6B78; }
+          .fnN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <rect x="140" y="24" width="600" height="34" rx="8" fill="#8FB8D6"/>
+        <text class="fnT" x="160" y="46" style="fill:#14202B">124k raw rows</text>
+        <text class="fnX" x="330" y="45" style="fill:#14202B;opacity:.85">everything, messy, unread</text>
+        <rect x="200" y="66" width="480" height="34" rx="8" fill="#4B8BBE"/>
+        <text class="fnT" x="220" y="88">Cleaned + typed</text>
+        <text class="fnS" x="380" y="88">salaried subset, tidy titles, deduped</text>
+        <rect x="260" y="108" width="360" height="34" rx="8" fill="#3776AB"/>
+        <text class="fnT" x="280" y="130">Grouped</text>
+        <text class="fnS" x="380" y="130">by role, level, location</text>
+        <rect x="320" y="150" width="240" height="34" rx="8" fill="#1E4A73"/>
+        <text class="fnT" x="340" y="172">5 findings</text>
+        <text class="fnS" x="430" y="172">subject + number</text>
+        <rect x="360" y="192" width="160" height="34" rx="8" fill="#E6A700"/>
+        <text class="fnT" x="380" y="214" style="fill:#14202B">1 headline</text>
+        <rect x="140" y="230" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="fnN" x="162" y="242">Narrow relentlessly - the report leads with the headline, not the 124k rows.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the funnel: raw rows narrow to five findings and one headline that leads the report</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>What makes a finding a finding<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A finding has three parts, and a wall of tables has none of them. Every headline you write today passes this test:</p>
+        <ul>
+          <li><strong>A subject</strong> - who or what is this about? "Senior data engineers", not "the data".</li>
+          <li><strong>A number</strong> - quantified, with the sample size. "$142k median (n=1,830)", not "high pay".</li>
+          <li><strong>A so-what</strong> - why should the reader care, and what's the caveat? "...but that's the 30% who disclose salary."</li>
+        </ul>
+        <p>Then structure the report the way people actually read: <strong>lead with the headline</strong>, one chart per point, quantify everything, and name the caveat out loud. The biggest caveat in this dataset is unavoidable - roughly 70% of postings have no salary, so every pay finding is about the <em>salaried subset</em>. Say so. Honesty is what makes the whole thing trustworthy.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>"Median data-analyst salary is $X (n=1,204 salaried postings)" beats a wall of groupby tables every single time. The table is your evidence; the finding is what you actually put in front of a human. On LinkedIn, the finding is the post - the table is the reply when someone asks "source?".</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The five findings, sketched<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You already computed most of these across Sessions 5-7. The job now is to phrase them as findings, not describe them as outputs:</p>
+        <table class="clean">
+          <thead><tr><th>Raw output you have</th><th>Phrased as a finding</th></tr></thead>
+          <tbody>
+            <tr><td>groupby role -> median salary</td><td>"Data engineers out-earn analysts by ~35% at the median (salaried subset)"</td></tr>
+            <tr><td>value_counts on location</td><td>"Three metros hold a quarter of all senior postings"</td></tr>
+            <tr><td>groupby experience_level</td><td>"Each step up the level ladder adds roughly $Xk to median pay"</td></tr>
+            <tr><td>skill counts (skills table)</td><td>"SQL and Python appear in over half of analyst postings"</td></tr>
+            <tr><td>salary disclosure rate</td><td>"Only ~30% of postings disclose pay - the honest caveat on all of the above"</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Pick the finding, then the chart</strong>
+          Never plot everything and hunt for a story. Decide the five sentences first, then choose the one chart that proves each. A chart with no finding attached is decoration.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: FIRST MODEL ============ -->
+  <section class="section" id="model">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers Kaggle Intro to ML L1-L3 + scikit-learn basics</span>
+      <h2>A first predictive model <span class="tag concept">6 min live</span></h2>
+    </div>
+    <p class="lede">Describing is "what happened". Predicting is "given a new role, what would it pay?". You already have everything you need to build an honest first model - and the framing matters more than the algorithm.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The model pipeline: features to train-test split to fit to predict to validate">
+        <style>
+          .mdT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .mdX { font: 400 11.5px Inter, sans-serif; fill: #5A6B78; }
+          .mdN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+          .mdA { stroke: #B8C4CE; stroke-width: 2; fill: none; marker-end: url(#mdAh); }
+        </style>
+        <defs>
+          <marker id="mdAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#B8C4CE" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="16" y="56" width="150" height="46" rx="10" fill="#1E4A73"/>
+        <text class="mdT" x="36" y="84">Features X</text>
+        <rect x="196" y="56" width="150" height="46" rx="10" fill="#3776AB"/>
+        <text class="mdT" x="214" y="79">Train / test</text>
+        <text class="mdT" x="232" y="95">split</text>
+        <rect x="376" y="56" width="150" height="46" rx="10" fill="#4B8BBE"/>
+        <text class="mdT" x="416" y="84">Fit model</text>
+        <rect x="556" y="56" width="150" height="46" rx="10" fill="#4B8BBE"/>
+        <text class="mdT" x="588" y="84">Predict</text>
+        <rect x="736" y="56" width="128" height="46" rx="10" fill="#E6A700"/>
+        <text class="mdT" x="756" y="84" style="fill:#14202B">Validate</text>
+        <line class="mdA" x1="166" y1="79" x2="192" y2="79"/>
+        <line class="mdA" x1="346" y1="79" x2="372" y2="79"/>
+        <line class="mdA" x1="526" y1="79" x2="552" y2="79"/>
+        <line class="mdA" x1="706" y1="79" x2="732" y2="79"/>
+        <text class="mdX" x="16" y="126">role, location,</text>
+        <text class="mdX" x="16" y="142">experience</text>
+        <text class="mdX" x="196" y="126">hold out 20%</text>
+        <text class="mdX" x="196" y="142">it never sees</text>
+        <text class="mdX" x="376" y="126">learn on the</text>
+        <text class="mdX" x="376" y="142">80% training</text>
+        <text class="mdX" x="556" y="126">estimate pay</text>
+        <text class="mdX" x="556" y="142">on unseen rows</text>
+        <text class="mdX" x="736" y="126">MAE + R2 vs</text>
+        <text class="mdX" x="736" y="142">a baseline</text>
+        <rect x="16" y="188" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="mdN" x="38" y="200">A model is a hypothesis you can test - fit on what it knows, judge it on what it doesn't.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the pipeline: features to split to fit to predict to validate, every time</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Supervised learning, in plain words<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Supervised learning is just this: you have example rows where you know the answer, and you want to predict the answer for new rows. Split your table into two:</p>
+        <ul>
+          <li><strong>Features (X)</strong> - the inputs you'd know about a new posting: role bucket, location, experience level.</li>
+          <li><strong>Target (y)</strong> - the thing you want to predict: <code>salary_year</code>, the column you built back in Session 4.</li>
+        </ul>
+        <p>Then you <strong>hold out</strong> some rows (the test set) that the model never sees while learning, so you can honestly ask "how would this do on a posting it's never met?". You <strong>encode</strong> the categorical columns - a model can't read the word "Senior", so <code>get_dummies</code> turns each category into 0/1 columns (one-hot encoding). Finally you <code>fit</code> a <code>LinearRegression</code>: it learns a weight per feature - roughly "how many dollars does being Senior add?".</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A linear model on role + location + level won't nail any single salary - real pay depends on company, negotiation, luck. But it will tell you the <em>shape</em>: which factors move pay most, and by how much. That's a genuinely useful thing to say on LinkedIn - "location adds more to pay than one level of seniority, in this dataset" is a finding a model earned.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The honest caveats<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>State these out loud in the report. They're not weaknesses to hide - naming them is what separates an analyst from a hype account:</p>
+        <ul>
+          <li><strong>Trained on the salaried 30%.</strong> The model only knows postings that disclosed pay. Those skew larger and more formal - it may not generalize to the silent 70%.</li>
+          <li><strong>Correlation, not cause.</strong> The model finds patterns, not mechanisms. "Senior adds $Xk" describes this data; it doesn't promise you a raise.</li>
+          <li><strong>Linear is a simplification.</strong> Real pay isn't a straight line. A modest fit is expected and fine - Part 3 shows how to say that honestly.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>A model is a hypothesis, not a crystal ball</strong>
+          The value is a testable, quantified claim - not a promise. The moment you present a model as certainty, you've stopped being trustworthy. Show the error, show the caveat, invite the pushback.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: VALIDATE + PACKAGE ============ -->
+  <section class="section" id="validate">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers Kaggle Intro to ML L4 (validation) + packaging</span>
+      <h2>Validate honestly, then package <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">A model that looks brilliant on its training data is telling you nothing - it may have just memorized. Judging it fairly, in units a human understands, then wrapping it so anyone can re-run it: that's the professional finish.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A four-item packaging checklist: reproducible notebook, labeled charts, stated caveats, one clear headline">
+        <style>
+          .pkT { font: 700 13.5px Inter, sans-serif; fill: #FFFFFF; }
+          .pkI { font: 600 13px Inter, sans-serif; fill: #14202B; }
+          .pkX { font: 400 12px Inter, sans-serif; fill: #5A6B78; }
+          .pkN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+          .pkC { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+        </style>
+        <rect x="40" y="30" width="380" height="80" rx="12" fill="#1E4A73"/>
+        <circle cx="78" cy="70" r="15" fill="#8FB8D6"/>
+        <text class="pkC" x="72" y="75" style="fill:#14202B">1</text>
+        <text class="pkT" x="106" y="65">Reproducible notebook</text>
+        <text class="pkX" x="106" y="88" style="fill:#EAF1F7">Restart &amp; Run All, top to bottom, no errors</text>
+        <rect x="460" y="30" width="380" height="80" rx="12" fill="#3776AB"/>
+        <circle cx="498" cy="70" r="15" fill="#8FB8D6"/>
+        <text class="pkC" x="492" y="75" style="fill:#14202B">2</text>
+        <text class="pkT" x="526" y="65">Labeled charts</text>
+        <text class="pkX" x="526" y="88" style="fill:#EAF1F7">title, axes, units, source - every one</text>
+        <rect x="40" y="126" width="380" height="80" rx="12" fill="#4B8BBE"/>
+        <circle cx="78" cy="166" r="15" fill="#EAF1F7"/>
+        <text class="pkC" x="72" y="171" style="fill:#14202B">3</text>
+        <text class="pkT" x="106" y="161">Stated caveats</text>
+        <text class="pkX" x="106" y="184" style="fill:#EAF1F7">the 70% missing salary, said out loud</text>
+        <rect x="460" y="126" width="380" height="80" rx="12" fill="#E6A700"/>
+        <circle cx="498" cy="166" r="15" fill="#14202B"/>
+        <text class="pkC" x="492" y="171">4</text>
+        <text class="pkI" x="526" y="161">One clear headline</text>
+        <text class="pkN" x="526" y="184">the single sentence the report leads with</text>
+        <rect x="40" y="224" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="pkN" x="62" y="236">All four, or it's a notebook - not a report. Ship the four.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the packaging checklist: reproducible, labeled, honest, headlined</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Never judge a model on training data<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>This is the single most important idea in Part 3. If you score the model on the same rows it learned from, it flatters itself - it can memorize its way to a great score and fall apart on anything new. That's <strong>overfitting</strong>, and the held-out test set is how you catch it. Score only on data the model has never seen. Two numbers say it plainly:</p>
+        <ul>
+          <li><strong>MAE (mean absolute error)</strong> - the average dollars your prediction is off, in the target's real units. "MAE = $18k" means predictions miss by about $18,000 on average. Human-readable, no interpretation needed.</li>
+          <li><strong>R2</strong> - the share of the variance in salary the model explains, from 0 to 1. R2 = 0.35 means it explains about a third of the spread; the rest is factors you didn't feed it.</li>
+        </ul>
+        <p>And always compare to a <strong>baseline</strong>: what if you just predicted the mean salary for everyone? If your model can't beat that dumb guess, it isn't earning its keep. Beating the baseline - even modestly - is the honest bar.</p>
+        <div class="callout tip">
+          <strong>A modest R2 is expected and fine</strong>
+          Predicting salary from three columns will never give you R2 = 0.9, and anyone who reports that on this data made a mistake. R2 = 0.3-0.4 that beats the mean baseline is a real, honest result. Report it proudly and say what's missing.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Package it so a stranger can run it<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three moves turn a working notebook into a shareable artifact:</p>
+        <ul>
+          <li><strong>A clean notebook, top to bottom.</strong> Restart &amp; Run All must produce every table and chart with no manual steps and no errors. If it only runs in the order you happened to click, it isn't reproducible.</li>
+          <li><strong>An exported report.</strong> <code>jupyter nbconvert --to html</code> freezes the notebook into a file you can email or host - no Python required to read it. PDF works too.</li>
+          <li><strong>A LinkedIn-ready summary.</strong> Hook, three findings, one chart, one honest caveat, soft CTA. No hype, no "🚨 SHOCKING". The restraint is the credibility.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>This is exactly Phoebe's KOL "ship it" move: finish the thing, credit yourself ("Analysis by [you]"), and end with a question that invites discussion rather than a demand for likes. A post that says "here's what I found, here's my caveat, what am I missing?" starts conversations - and conversations are what build a following. The finished report is the proof; the caveat is the invitation.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Assemble the five findings <span class="tag demo">★ 8 min · everyone writes</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Open your saved summary frames from Sessions 5-7 (the groupby results you exported). If you saved them as CSVs, reload them; if they're in the notebook, scroll to them.</p></div>
+      <div class="step"><p>For each of the five, write the finding as a one-line markdown headline using the <strong>subject + number + so-what</strong> test. Put a sample size on every pay number.</p></div>
+      <div class="step"><p>Pick the single best chart for each finding from Sessions 6-7. One chart per point - if two charts say the same thing, drop one.</p></div>
+      <div class="step"><p>Add the honest caveat as its own line: pay findings cover only the ~30% of postings that disclose salary.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Findings as markdown, above each chart</span># 5 findings - the state of the data job market (salaried subset, 2023-24)
+
+**1. Data engineers out-earn analysts by ~35% at the median** ($142k vs $105k, n=1,830).
+**2. Each step up the seniority ladder adds ~$22k** to median pay (Entry to Senior).
+**3. Three metros hold ~25% of all senior postings** - location is a pay lever, not just a dot on a map.
+**4. SQL and Python appear in over half of analyst postings** - the non-negotiable pair.
+**5. Only ~30% of postings disclose salary** - the caveat on findings 1-3, stated up front.</div>
+    <div class="callout tip">
+      <strong>Write the caveat first, not last</strong>
+      Put finding 5 (the disclosure rate) at the top of your report, not buried at the bottom. Leading with your biggest limitation is disarming - readers trust you more, not less, when you show the cracks before they find them.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>Build the salary model <span class="tag demo">★ 9 min · everyone models</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Start from your cleaned, salaried frame. Keep three feature columns plus the target: <code>experience_level</code>, a top-locations column, a role bucket, and <code>salary_year</code>.</p></div>
+      <div class="step"><p>One-hot encode the categoricals with <code>get_dummies</code>, then split into train and test with a pinned seed.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Encode + split</span>import pandas as pd
+
+model_df = jobs_salaried[["experience_level", "location_top", "role_bucket", "salary_year"]].dropna()
+
+# one-hot: a model can't read words, so each category becomes a 0/1 column
+X = pd.get_dummies(model_df[["experience_level", "location_top", "role_bucket"]], drop_first=True)
+y = model_df["salary_year"]</div>
+    <div class="prompt-box good"><span class="label">★ Split, fit, predict, score - honestly</span>from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, r2_score
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = LinearRegression().fit(X_train, y_train)
+preds = model.predict(X_test)      # predict on rows the model never saw
+
+mae = mean_absolute_error(y_test, preds)
+r2  = r2_score(y_test, preds)
+print(f"MAE: ${mae:,.0f}   R2: {r2:.2f}")</div>
+    <div class="prompt-box good"><span class="label">★ Beat the baseline - or the model isn't earning its keep</span># the dumb guess: predict the mean salary for everyone
+baseline = [y_train.mean()] * len(y_test)
+base_mae = mean_absolute_error(y_test, baseline)
+
+print(f"Baseline MAE (predict the mean): ${base_mae:,.0f}")
+print(f"Model MAE:                       ${mae:,.0f}")
+# if model MAE &lt; baseline MAE, your features add real signal</div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>Expect a modest R2 - somewhere around 0.3 to 0.4 - and an MAE in the tens of thousands. That is not failure; that is honest. Three columns can't capture company, negotiation, or timing. The finding is "role, level, and location together explain about a third of salary spread, and beat guessing the mean by $Xk" - a claim a model earned and a caveat a professional states.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Package and ship <span class="tag demo">★ 5 min · everyone exports</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p><strong>Reproducibility check:</strong> Kernel -> Restart &amp; Run All. Watch it run top to bottom with no errors and every chart re-rendering. If a cell breaks, fix the order now - a report that only runs by hand isn't a report.</p></div>
+      <div class="step"><p><strong>Export</strong> the notebook to a standalone file anyone can open:</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Freeze the notebook into a shareable file</span># run in a terminal, from your project folder:
+jupyter nbconvert --to html 08-report.ipynb
+
+# result: 08-report.html - email it, host it, no Python needed to read it
+# for a PDF instead: jupyter nbconvert --to pdf 08-report.ipynb</div>
+    <div class="steps">
+      <div class="step"><p><strong>Draft the LinkedIn post</strong> - hook, three findings, one chart, the caveat, a soft CTA. Restraint over hype.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ The LinkedIn post skeleton</span>I analyzed 124k LinkedIn job postings to see what the data job market pays. Three things stood out:
+
+- Data engineers out-earn analysts by ~35% at the median.
+- Each step up the seniority ladder adds ~$22k.
+- Location moves pay more than one level of seniority does.
+
+Honest caveat: only ~30% of postings disclose salary, so this is the salaried slice - not the whole market.
+
+[one chart attached]
+
+What surprised you here - and what would you have looked at next?
+
+Analysis by [you] · full notebook in comments.</div>
+    <div class="callout tip">
+      <strong>Ship it, then credit yourself</strong>
+      The post is not finished until your name is on it and it's actually posted. A perfect analysis in a private notebook helps no one and builds no reputation. Done and shared beats perfect and hidden - every time.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session · and where to go next</span>
+      <h2>Finish it, post it, then keep going <span class="tag exercise">◐ ongoing</span></h2>
+    </div>
+    <ul>
+      <li><strong>Finish YOUR report</strong> - your five findings, your five charts, your model - and <strong>actually post it</strong> to LinkedIn with your name on it. This is the capstone; the deliverable is a thing that exists in public.</li>
+      <li><strong>Try a <code>RandomForestRegressor</code></strong> in place of LinearRegression (same X, y, split) and compare MAE and R2. It often beats linear on messy data - a first taste of the next level.</li>
+      <li><strong>Take Kaggle's free <a href="https://www.kaggle.com/learn/intro-to-machine-learning">Intro to Machine Learning</a> and <a href="https://www.kaggle.com/learn/intermediate-machine-learning">Intermediate ML</a></strong> micro-courses for the certificate and graded reps - they go deeper on validation, random forests, and cross-validation.</li>
+      <li><strong>Read McKinney <a href="https://wesmckinney.com/book/data-analysis-examples">ch13 - Data Analysis Examples</a></strong> to see full analyses worked end to end.</li>
+    </ul>
+    <div class="callout win">
+      <strong>Where to go next - your roadmap past this course</strong>
+      <ul>
+        <li><strong>polars</strong> - when pandas gets slow, polars handles bigger data far faster with a similar API.</li>
+        <li><strong>Statistical testing</strong> - move from "looks different" to "significantly different" (statsmodels, scipy.stats).</li>
+        <li><strong>Dashboards</strong> - turn a report into an interactive app with Streamlit so people can explore, not just read.</li>
+        <li><strong>The sibling course</strong> - <a href="https://phoebefu6.github.io/learn-sql-with-phoebe/">learn-sql-with-phoebe</a> for pulling data straight from the warehouse before it ever hits pandas.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you graduate 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Why split the data into separate train and test sets?</p>
+      <button class="qopt" type="button">A · To make the model train faster on fewer rows</button>
+      <button class="qopt" type="button">B · To measure how the model does on data it has NOT seen - scoring on training data flatters the model and hides overfitting</button>
+      <button class="qopt" type="button">C · Because scikit-learn refuses to run without it</button>
+      <p class="qwhy">A model can memorize its training rows and look brilliant, then fall apart on anything new. The held-out test set is the only honest scoreboard.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · Your model reports an MAE of $18k. What does that mean?</p>
+      <button class="qopt" type="button">A · The model is 18% accurate</button>
+      <button class="qopt" type="button">B · 18,000 rows were used for testing</button>
+      <button class="qopt" type="button">C · Predictions are off by about $18,000 on average - in the target's real units (dollars)</button>
+      <p class="qwhy">MAE is the mean absolute error in the target's own units. Dollars in, dollars out - no interpretation needed, which is why it's the friendliest metric to report.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What makes a finding shareable, versus just output?</p>
+      <button class="qopt" type="button">A · A clear subject + a quantified number + a so-what and its caveat, led by the headline - not a raw table</button>
+      <button class="qopt" type="button">B · A bigger table with more columns</button>
+      <button class="qopt" type="button">C · A higher R2 on the training set</button>
+      <p class="qwhy">Output is what the computer prints; a finding is what a human should do about it. Subject, number, so-what, caveat - led by the headline. That's the whole last mile.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ OFFICIAL SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This finale teaches the working content of Kaggle's free <a href="https://www.kaggle.com/learn/intro-to-machine-learning">Intro to Machine Learning</a> micro-course, the scikit-learn basics, and Wes McKinney's open-access <a href="https://wesmckinney.com/book/">Python for Data Analysis (3e)</a>. Certificates and graded exercises stay on Kaggle - links provided.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Kaggle Intro to ML L1-L4</span><span class="note">how models work, exploration, first model, validation - Parts 2-3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">scikit-learn basics</span><span class="note">train_test_split, LinearRegression, MAE + R2 metrics - Demo 2</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">McKinney ch13 - Data Analysis Examples</span><span class="note">full analyses worked end to end, output to insight - Part 1</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">McKinney ch12 - Modeling Libraries</span><span class="note">statsmodels named for statistical testing - a next-step pointer</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Random forests, cross-validation, feature engineering</span><span class="note">first taste only - full treatment in Kaggle Intermediate ML</span></div>
+    </div>
+    <div class="callout tip">
+      <strong>Certificates live on Kaggle</strong>
+      This course teaches the working content so you can build for real. The graded exercises, badges, and certificates are on Kaggle's platform - take the two ML micro-courses to earn them.
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 8 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>A finding</b><span>subject + number + so-what + caveat, led by the headline. Not a raw table.</span></div>
+      <div class="cheat-item"><b>Encode categoricals</b><span>pd.get_dummies(X, drop_first=True) - turns words into 0/1 columns a model can read.</span></div>
+      <div class="cheat-item"><b>Hold out data</b><span>train_test_split(X, y, test_size=0.2, random_state=42). Score only on the test set.</span></div>
+      <div class="cheat-item"><b>Fit a model</b><span>LinearRegression().fit(X_train, y_train); then .predict(X_test).</span></div>
+      <div class="cheat-item"><b>Judge honestly</b><span>MAE = avg dollars off · R2 = share of variance explained · both vs a mean baseline.</span></div>
+      <div class="cheat-item"><b>Ship it</b><span>Restart &amp; Run All, then jupyter nbconvert --to html. Post it. Credit yourself.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 8 of 8 · learn-python-data-analysis-with-phoebe · by Phoebe Fu</span>
+    <span><a href="07-seaborn-polish.html">← Prev: Seaborn polish</a> &nbsp;·&nbsp; <a href="../index.html">All sessions →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

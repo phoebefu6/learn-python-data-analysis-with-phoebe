@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 2 · NumPy foundations - learn python data analysis with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-python-data-analysis-with-phoebe</a> / Session 2 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Python Data Analysis with Phoebe · Session 2 of 8</div>
+    <h1>NumPy <span class="accent">foundations</span></h1>
+    <p class="sub">Every pandas column you touch for the rest of this course IS a NumPy array underneath. Learn the base - arrays, dtypes, vectorization, broadcasting, boolean masks - and pandas stops feeling like magic and starts feeling like something you can predict. We stay on the 124,000 LinkedIn postings: today we practice the moves on salary-shaped arrays.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Easy</span>
+      <span class="chip audience">Builders</span>
+      <span class="chip audience">Vectorized thinking</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build the moves</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why NumPy, before pandas</h2>
+    </div>
+    <p class="lede">It's tempting to skip straight to pandas - it's where the fun is. But pandas is a friendly wrapper around NumPy, and the day something is slow, or a dtype surprises you, or a filter behaves oddly, the answer is almost always one layer down. Spend 45 minutes here and every fast pandas operation you write later will make sense instead of feeling like a spell. If you can write a Python loop, you already know enough - we're going to teach you to <strong>stop writing them</strong>.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">The project: the data job market</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Real comfort with arrays, dtypes, vectorization, broadcasting, and boolean indexing - the exact mental model behind every fast pandas operation. You'll convert a whole array of salaries in one line, filter it with a boolean mask, and normalize it without a single loop.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: ARRAYS VS LISTS ============ -->
+  <section class="section" id="arrays">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers NumPy absolute beginners - arrays</span>
+      <h2>Arrays vs Python lists <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">A Python list can hold anything - ints, strings, other lists - so Python stores each item as a separate boxed object scattered across memory. A NumPy <code>ndarray</code> holds one type in one contiguous block, so the CPU can rip through it in tight C loops. That single design choice is why arrays are fast.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A Python list stores scattered boxed objects and loops slowly, while a NumPy array is one typed contiguous block processed by vectorized C code">
+        <style>
+          .npaT { font: 700 15px Inter, sans-serif; fill: #14202B; }
+          .npaW { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .npaX { font: 400 12px Inter, sans-serif; fill: #5A6B78; }
+          .npaN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <text class="npaT" x="20" y="34">Python list</text>
+        <text class="npaX" x="20" y="54">boxes scattered in memory, one slow Python loop</text>
+        <rect x="20" y="70" width="70" height="42" rx="8" fill="#B8C4CE"/>
+        <text class="npaW" x="46" y="96" style="fill:#14202B">obj</text>
+        <rect x="150" y="70" width="70" height="42" rx="8" fill="#B8C4CE"/>
+        <text class="npaW" x="176" y="96" style="fill:#14202B">obj</text>
+        <rect x="280" y="70" width="70" height="42" rx="8" fill="#B8C4CE"/>
+        <text class="npaW" x="306" y="96" style="fill:#14202B">obj</text>
+        <rect x="410" y="70" width="70" height="42" rx="8" fill="#B8C4CE"/>
+        <text class="npaW" x="436" y="96" style="fill:#14202B">obj</text>
+        <text class="npaX" x="510" y="96">each item is a separate pointer + Python object</text>
+
+        <text class="npaT" x="20" y="164">NumPy array</text>
+        <text class="npaX" x="20" y="184">one typed block, vectorized C under the hood</text>
+        <rect x="20" y="200" width="66" height="42" fill="#1E4A73"/>
+        <rect x="86" y="200" width="66" height="42" fill="#3776AB"/>
+        <rect x="152" y="200" width="66" height="42" fill="#1E4A73"/>
+        <rect x="218" y="200" width="66" height="42" fill="#3776AB"/>
+        <rect x="284" y="200" width="66" height="42" fill="#1E4A73"/>
+        <rect x="350" y="200" width="66" height="42" fill="#3776AB"/>
+        <text class="npaW" x="44" y="226">64</text>
+        <text class="npaW" x="110" y="226">72</text>
+        <text class="npaW" x="176" y="226">88</text>
+        <text class="npaW" x="242" y="226">91</text>
+        <text class="npaW" x="308" y="226">55</text>
+        <text class="npaW" x="374" y="226">67</text>
+        <text class="npaX" x="440" y="226">contiguous · homogeneous dtype (int64) · no per-item boxing</text>
+
+        <rect x="20" y="270" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="npaN" x="42" y="282">Same numbers, different memory - the array layout is the whole speed story.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a list is scattered boxes; an array is one typed block the CPU loves</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The array is a typed block<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>An array carries three facts about itself, and you'll check all three constantly: <code>shape</code> (how many rows and columns), <code>ndim</code> (how many dimensions), and <code>dtype</code> (the one type every element shares). Because the type is fixed, NumPy knows exactly how many bytes each element takes and can jump straight to element number 90,000 without walking the list.</p>
+        <div class="prompt-box good"><span class="label">★ Three facts about any array</span>import numpy as np
+
+a = np.array([64000, 72000, 88000, 91000])
+a.shape     # (4,)  -> one dimension, four elements
+a.ndim      # 1
+a.dtype     # dtype('int64') - every element is an int64</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>When you later run <code>jobs["salary"].values</code> on the LinkedIn data, pandas hands you back exactly this: a NumPy array with a dtype. If that dtype comes back as <code>object</code> instead of <code>float64</code>, you've just learned the salary column has junk in it - text mixed with numbers. The dtype is the first tell.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Making arrays - the constructor table<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You rarely type arrays by hand. These five constructors cover almost everything:</p>
+        <table class="clean">
+          <thead><tr><th>Constructor</th><th>What it makes</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>np.array(list)</td><td>Array from a Python list or nested lists</td><td>np.array([1, 2, 3])</td></tr>
+            <tr><td>np.arange(start, stop, step)</td><td>Evenly spaced values, like range but an array</td><td>np.arange(0, 10, 2)</td></tr>
+            <tr><td>np.zeros(shape)</td><td>All zeros - a blank canvas to fill</td><td>np.zeros((3, 4))</td></tr>
+            <tr><td>np.ones(shape)</td><td>All ones - handy for scaling</td><td>np.ones(5)</td></tr>
+            <tr><td>np.linspace(start, stop, n)</td><td>n evenly spaced points between two bounds</td><td>np.linspace(0, 1, 11)</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>arange vs linspace</strong>
+          <code>arange</code> takes a step size, <code>linspace</code> takes a count. Reach for linspace when you know how many points you want (say, 11 salary bins) and arange when you know the spacing.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: VECTORIZATION ============ -->
+  <section class="section" id="vectorization">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers NumPy fundamentals - ufuncs &amp; aggregation</span>
+      <h2>Vectorization - loops without loops <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">This is the big idea of the whole session. Instead of looping over a million numbers in Python, you write one expression on the whole array and NumPy runs the loop for you in C. Same result, roughly 100x faster, and far easier to read.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A slow Python for-loop over one million numbers becomes a single fast vectorized array operation">
+        <style>
+          .npbT { font: 700 13.5px Inter, sans-serif; fill: #FFFFFF; }
+          .npbH { font: 700 14px Inter, sans-serif; fill: #14202B; }
+          .npbX { font: 400 12px Inter, sans-serif; fill: #5A6B78; }
+          .npbC { font: 600 12.5px 'Courier New', monospace; fill: #FFFFFF; }
+          .npbN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+          .npbA { stroke: #B8C4CE; stroke-width: 2.5; fill: none; marker-end: url(#arrNpb); }
+        </style>
+        <defs>
+          <marker id="arrNpb" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#B8C4CE" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="npbH" x="20" y="34">Before - Python loop</text>
+        <rect x="20" y="48" width="330" height="88" rx="10" fill="#1E4A73"/>
+        <text class="npbC" x="40" y="78">out = []</text>
+        <text class="npbC" x="40" y="100">for x in salaries:</text>
+        <text class="npbC" x="40" y="122">    out.append(x * 1.05)</text>
+        <text class="npbX" x="20" y="158">1,000,000 slow Python iterations</text>
+
+        <line class="npbA" x1="360" y1="92" x2="520" y2="92"/>
+        <text class="npbX" x="378" y="82">~100x</text>
+        <text class="npbX" x="378" y="112">faster</text>
+
+        <text class="npbH" x="530" y="34">After - vectorized</text>
+        <rect x="530" y="48" width="330" height="88" rx="10" fill="#3776AB"/>
+        <text class="npbC" x="550" y="98">out = salaries * 1.05</text>
+        <text class="npbX" x="530" y="158">one expression, NumPy loops in C</text>
+
+        <rect x="20" y="210" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="npbN" x="42" y="222">If you're writing a for-loop over an array, there's almost always a one-line vectorized version.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the same math, a Python loop vs one vectorized expression</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Elementwise ops, ufuncs, and aggregations<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Arithmetic on arrays happens elementwise: <code>arr * 2</code> doubles every element at once. The same goes for the built-in <strong>universal functions</strong> (ufuncs) like <code>np.sqrt</code>, <code>np.log</code>, and <code>np.exp</code> - they map over the whole array in C. And when you want to collapse an array to a summary, the <strong>aggregations</strong> - <code>sum</code>, <code>mean</code>, <code>std</code>, <code>min</code>, <code>max</code> - do it in one call.</p>
+        <div class="prompt-box good"><span class="label">★ Elementwise math + ufuncs + aggregations</span>import numpy as np
+
+sal = np.array([64000, 72000, 88000, 91000, 55000])
+
+sal * 1.05          # 5% raise, every value at once
+np.log(sal)         # ufunc: natural log of each element
+sal.mean()          # 74000.0  - one number summarizing the array
+sal.std()           # spread around the mean
+sal.max() - sal.min()   # the range</div>
+        <p>For 2-D arrays, <code>axis</code> picks the direction: <code>axis=0</code> collapses down the rows (a per-column summary), <code>axis=1</code> collapses across the columns (a per-row summary). Get this straight now - it's the exact same <code>axis</code> you'll use in pandas <code>groupby</code>.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Our LinkedIn data lists some pay as hourly. To compare fairly, you convert 124,000 salaries from hourly to yearly in one line - <code>yearly = hourly * 40 * 52</code> - no loop, no wait. That single expression is what makes analysis on 124k rows feel instant instead of sluggish.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why ~100x - a quick mental model<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A Python loop pays a tax on every single iteration: check the type, unbox the object, do the math, re-box the result. Over a million elements that tax dominates. A vectorized op skips all of it - one type check up front, then a tight C loop over the contiguous block. The speed-up is typically 50-200x, and it grows with array size.</p>
+        <div class="callout tip">
+          <strong>Read a timing before you trust the claim</strong>
+          Don't take "100x" on faith - in Demo 1 you'll time a loop against the vectorized version with <code>%timeit</code> and watch milliseconds turn into microseconds on your own machine.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: INDEXING & BROADCASTING ============ -->
+  <section class="section" id="indexing">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers NumPy indexing + broadcasting</span>
+      <h2>Indexing, slicing, broadcasting <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Three ways to reach into an array. Basic slicing (fast, but returns a view). Boolean masks (how you filter data). Broadcasting (how NumPy makes mismatched shapes line up). The middle one is the one you'll use every single day.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Broadcasting a single scalar across every element of an array so a scalar plus array works elementwise">
+        <style>
+          .npcT { font: 700 14px Inter, sans-serif; fill: #14202B; }
+          .npcW { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .npcX { font: 400 12px Inter, sans-serif; fill: #5A6B78; }
+          .npcN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+          .npcA { stroke: #E6A700; stroke-width: 2; fill: none; marker-end: url(#arrNpc); }
+        </style>
+        <defs>
+          <marker id="arrNpc" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#E6A700" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <text class="npcT" x="20" y="34">Broadcasting: one scalar stretched across the array</text>
+
+        <rect x="20" y="56" width="80" height="44" rx="8" fill="#E6A700"/>
+        <text class="npcW" x="46" y="83" style="fill:#14202B">+ 1000</text>
+        <text class="npcX" x="20" y="120">a single scalar</text>
+
+        <line class="npcA" x1="110" y1="78" x2="180" y2="78"/>
+
+        <rect x="200" y="56" width="70" height="44" fill="#3776AB"/>
+        <rect x="270" y="56" width="70" height="44" fill="#4B8BBE"/>
+        <rect x="340" y="56" width="70" height="44" fill="#3776AB"/>
+        <rect x="410" y="56" width="70" height="44" fill="#4B8BBE"/>
+        <text class="npcW" x="226" y="83">64k</text>
+        <text class="npcW" x="296" y="83">72k</text>
+        <text class="npcW" x="366" y="83">88k</text>
+        <text class="npcW" x="436" y="83">91k</text>
+        <text class="npcX" x="200" y="120">array of 4 salaries</text>
+
+        <text class="npcT" x="520" y="82">=</text>
+
+        <rect x="560" y="56" width="70" height="44" fill="#1E4A73"/>
+        <rect x="630" y="56" width="70" height="44" fill="#1E4A73"/>
+        <rect x="700" y="56" width="70" height="44" fill="#1E4A73"/>
+        <rect x="770" y="56" width="70" height="44" fill="#1E4A73"/>
+        <text class="npcW" x="582" y="83">65k</text>
+        <text class="npcW" x="652" y="83">73k</text>
+        <text class="npcW" x="722" y="83">89k</text>
+        <text class="npcW" x="792" y="83">92k</text>
+        <text class="npcX" x="560" y="120">1000 added to every element</text>
+
+        <text class="npcX" x="20" y="176">The scalar has no shape of its own, so NumPy "stretches" it to match - that's the broadcasting rule in one picture.</text>
+        <text class="npcX" x="20" y="198">Same idea aligns a (3,1) column with a (1,4) row into a (3,4) grid when shapes are compatible.</text>
+
+        <rect x="20" y="222" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="npcN" x="42" y="234">No loop, no manual repeat - broadcasting is how scalar-and-array math just works.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a scalar broadcast across every element of an array</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Slicing returns views, not copies<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Basic slicing (<code>arr[1:4]</code>) gives you a <strong>view</strong> onto the same memory, not a fresh copy - so writing into a slice changes the original. That's fast and occasionally surprising. When you need an independent copy, say so with <code>.copy()</code>.</p>
+        <div class="prompt-box good"><span class="label">★ Slice, and the view gotcha</span>arr = np.arange(10)
+arr[2:5]            # array([2, 3, 4]) - a view
+piece = arr[2:5]
+piece[0] = 99       # this ALSO changes arr! (it's a view)
+safe = arr[2:5].copy()   # .copy() when you want independence</div>
+        <p>Fancy indexing with a list of positions - <code>arr[[0, 3, 7]]</code> - does return a copy, and lets you pull arbitrary elements in any order.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Boolean masks are how you filter data<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Compare an array to a value and you get back an array of <code>True</code>/<code>False</code> - a <strong>mask</strong>. Index with that mask and you get only the elements where it's <code>True</code>. This is the single most important move in the session, because it is exactly how you'll filter DataFrames in Session 3.</p>
+        <div class="prompt-box good"><span class="label">★ The boolean mask pattern</span>sal = np.array([64000, 72000, 88000, 91000, 55000])
+
+sal > 80000              # array([False, False, True, True, False]) - the mask
+sal[sal > 80000]         # array([88000, 91000]) - only the matching elements
+(sal > 80000).sum()      # 2  - True counts as 1, so this counts matches</div>
+        <div class="callout tip">
+          <strong>Foreshadow: pandas filtering</strong>
+          Next session, <code>jobs[jobs["salary"] &gt; 80000]</code> is this exact pattern - a boolean mask indexing a table. Learn it once here on a flat array and pandas filtering will feel like something you already know.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Vectorized math, timed <span class="tag demo">★ 8 min · everyone builds</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>New notebook cell. Build a fake salary array to practice on - we'll use the real column next session.</p></div>
+      <div class="step"><p>Do vectorized math: a 5% raise, and an hourly-to-yearly conversion. Notice there is no loop anywhere.</p></div>
+      <div class="step"><p>Now prove the speed. Time a plain Python loop against the vectorized version with <code>%timeit</code>.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Build an array + vectorized math</span>import numpy as np
+
+# 1,000,000 fake yearly salaries between 40k and 200k
+rng = np.random.default_rng(42)
+sal = rng.integers(40000, 200000, size=1_000_000)
+
+raised = sal * 1.05                 # 5% raise, whole array at once
+hourly = np.array([28.5, 41.0, 60.0])
+yearly = hourly * 40 * 52           # unit conversion, no loop</div>
+    <div class="prompt-box good"><span class="label">★ Time the loop vs the vectorized op</span>%timeit [x * 1.05 for x in sal]     # Python loop over 1M values
+%timeit sal * 1.05                  # vectorized - watch the units drop
+# loop -> tens of milliseconds; vectorized -> hundreds of microseconds</div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>That timing gap is exactly why analysts can iterate on 124k LinkedIn postings interactively - tweak a formula, re-run, see the answer in a heartbeat. If every operation looped in Python, a working session would be a coffee break between cells.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>Boolean masking on salaries <span class="tag demo">★ 8 min · everyone builds</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Take a salary array. Find the median, then build a mask for the "high earners" above it.</p></div>
+      <div class="step"><p>Count how many are in the high group, and compute that group's mean - all with masks, no loops.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Mask, count, and summarize a sub-group</span>sal = rng.integers(40000, 200000, size=1_000_000)
+
+mid = np.median(sal)             # the middle salary
+high_mask = sal > mid            # boolean array: True where above median
+
+high_mask.sum()                  # how many are above the median?
+sal[high_mask].mean()            # average salary OF the high group
+sal[high_mask].shape             # size of the filtered array</div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>This is the whole shape of a real question on the LinkedIn data: "of postings that list pay above the median, what's the average, and how many are there?" You'll ask exactly this next session with <code>jobs[jobs["salary"] &gt; mid]</code> - same mask, just on a DataFrame instead of a flat array.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Normalize in one line <span class="tag demo">★ 5 min · follow along</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Normalizing - subtract the mean, divide by the standard deviation - is a broadcasting classic. The scalars stretch across the whole array automatically.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Standardize (z-score) with broadcasting</span>sal = np.array([64000, 72000, 88000, 91000, 55000], dtype=float)
+
+z = (sal - sal.mean()) / sal.std()   # broadcasting: two scalars over the array
+z.mean()      # ~0.0  - centered
+z.std()       # ~1.0  - unit spread</div>
+    <div class="steps">
+      <div class="step"><p>Read the expression out loud: <code>sal.mean()</code> is one number, but subtracting it from the array applies to every element - that is broadcasting doing the work.</p></div>
+      <div class="step"><p>On a 2-D array you'd pass <code>axis=0</code> to normalize each column independently. Same idea, one axis deeper.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Why normalize at all?</strong>
+      When we build the salary model in Session 8, features on wildly different scales confuse many algorithms. Standardizing puts them on common footing - and it's this exact one-liner, just applied to a DataFrame column.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Do a handful of the NumPy 100-exercises</strong> (the classic <code>numpy-100</code> set) - pick five from the beginner section. Reps build the muscle.</li>
+      <li><strong>Re-implement one loop as vectorized.</strong> Take any Python loop you wrote in Session 1 of learn-python-with-phoebe and rewrite it as a single array expression. Time both.</li>
+      <li><strong>Practice masks:</strong> make an array of 100 random salaries, then answer with masks - how many above 100k, mean of the bottom quartile, count between 60k and 90k.</li>
+      <li><strong>Read McKinney ch4</strong> (NumPy Basics) end to end once. It's the canonical reference and it's free and open access.</li>
+      <li><strong>Optional:</strong> skim Kaggle's free "Intro to Deep Learning" first page - not for the models, just to see NumPy arrays everywhere underneath.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · Why is a NumPy array faster than a Python list for numeric work?</p>
+      <button class="qopt" type="button">A · It uses less disk space</button>
+      <button class="qopt" type="button">B · It automatically caches results</button>
+      <button class="qopt" type="button">C · It's a homogeneous, typed, contiguous block, so math runs as vectorized C loops - no per-item boxing</button>
+      <p class="qwhy">One dtype in one contiguous block lets NumPy loop in C instead of paying Python's per-element tax. That's the ~100x.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">2 · What does <code>arr[arr &gt; 50000]</code> return?</p>
+      <button class="qopt" type="button">A · The positions where values exceed 50000</button>
+      <button class="qopt" type="button">B · The elements where the boolean mask is True - a filtered array of the matching values</button>
+      <button class="qopt" type="button">C · An error, because you can't compare an array to a number</button>
+      <p class="qwhy"><code>arr &gt; 50000</code> is a True/False mask; indexing with it keeps only the True elements. This is exactly how pandas filtering works.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What is broadcasting?</p>
+      <button class="qopt" type="button">A · NumPy auto-expanding a smaller shape to match a larger one so elementwise ops line up</button>
+      <button class="qopt" type="button">B · Sending an array over the network to another machine</button>
+      <button class="qopt" type="button">C · Printing every element of an array to the screen</button>
+      <p class="qwhy">A scalar (or smaller array) gets "stretched" to fit, so <code>sal - sal.mean()</code> subtracts one number from every element with no loop.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ OFFICIAL SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the working content of the official NumPy documentation and Wes McKinney's open-access <a href="https://wesmckinney.com/book/">Python for Data Analysis (3e)</a>. Certificates, graded exercises, and the full API reference stay on those platforms - links provided.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">NumPy absolute beginners - arrays, dtype, indexing</span><span class="note">create arrays, shape/ndim/dtype, slicing - Parts 1 &amp; 3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">NumPy fundamentals - broadcasting, ufuncs, aggregation</span><span class="note">vectorized math, axis, boolean masks - Parts 2 &amp; 3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">McKinney ch4 - NumPy Basics: Arrays and Vectorized Computation</span><span class="note">the canonical reference for everything today</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Structured / record arrays</span><span class="note">self-study - rarely needed once you have pandas DataFrames</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 2 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Create arrays</b><span>np.array([...]) · np.arange(0,10,2) · np.zeros((3,4)) · np.ones(5) · np.linspace(0,1,11).</span></div>
+      <div class="cheat-item"><b>dtype / shape</b><span>a.shape (rows, cols) · a.ndim · a.dtype - check these first; an object dtype means junk in the column.</span></div>
+      <div class="cheat-item"><b>Vectorized math + ufuncs</b><span>arr * 1.05, arr + arr2, np.sqrt(arr), np.log(arr) - elementwise, no loops, ~100x faster.</span></div>
+      <div class="cheat-item"><b>Aggregation with axis</b><span>arr.sum() / .mean() / .std() / .min() / .max(); axis=0 down columns, axis=1 across rows.</span></div>
+      <div class="cheat-item"><b>Boolean masking</b><span>mask = arr &gt; x; arr[mask] keeps matches; mask.sum() counts them. The filtering pattern.</span></div>
+      <div class="cheat-item"><b>Broadcasting</b><span>(arr - arr.mean()) / arr.std() - scalars stretch to match the array shape automatically.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 2 of 8 · learn-python-data-analysis-with-phoebe · by Phoebe Fu</span>
+    <span><a href="01-setup-and-the-mission.html">← Prev: Setup</a> &nbsp;·&nbsp; <a href="03-pandas-core.html">Next: pandas core →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

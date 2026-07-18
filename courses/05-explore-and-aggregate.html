@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 5 · Explore and aggregate - learn python data analysis with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-python-data-analysis-with-phoebe</a> / Session 5 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Python Data Analysis with Phoebe · Session 5 of 8</div>
+    <h1>Explore and <span class="accent">aggregate</span></h1>
+    <p class="sub">Now the questions get answered. You'll learn the split-apply-combine engine behind groupby, reshape results into readable grids with pivot_table, and merge the dataset's separate tables into one picture. From your cleaned frame you pull real findings: median pay by role, the most-demanded skills, and how remote work moves the number.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Getting real</span>
+      <span class="chip audience">Builders</span>
+      <span class="chip audience">groupby + joins</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Answer questions</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where analysis starts answering questions</h2>
+    </div>
+    <p class="lede">Sessions 1 to 4 got you a clean, trustworthy frame. That was setup. This is the payoff. Almost every real question you'll ever ask of data comes down to two operations: <strong>split the data into groups and compute something per group</strong>, and <strong>join separate tables into one</strong>. That's it. Median salary by experience level? Group. Top skills across postings? Group and count. Do bigger companies pay more? Join, then group. Master these and you can interrogate any dataset - today you interrogate the job market.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">The project: the data job market</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Real findings, not exercises: a table of median <code>salary_year</code> by role and experience level, a ranked list of the most-demanded skills across all postings, and a pivot grid of pay by experience level crossed with remote status. Three answers you could put on a slide - and the summary frames you'll chart in Session 6.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: GROUPBY ============ -->
+  <section class="section" id="groupby">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers groupby split-apply-combine</span>
+      <h2>groupby: split-apply-combine <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">The single most useful mental model in data analysis. When you write <code>df.groupby("col")["val"].mean()</code>, pandas does three things - and once you see them, groupby stops being magic.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Split-apply-combine: one table splits into groups by a key, a function applies to each group, and the results combine into a summary table">
+        <style>
+          .sacT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .sacH { font: 700 12.5px Inter, sans-serif; fill: #14202B; }
+          .sacX { font: 400 11.5px Inter, sans-serif; fill: #5A6B78; }
+          .sacV { font: 600 12px Inter, sans-serif; fill: #FFFFFF; }
+          .sacN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+          .sacA { stroke: #B8C4CE; stroke-width: 2; fill: none; marker-end: url(#sacAh); }
+        </style>
+        <defs>
+          <marker id="sacAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#B8C4CE" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <!-- stage labels -->
+        <text class="sacH" x="30" y="28">1 · Split</text>
+        <text class="sacH" x="360" y="28">2 · Apply</text>
+        <text class="sacH" x="690" y="28">3 · Combine</text>
+        <!-- source table -->
+        <rect x="30" y="42" width="150" height="120" rx="8" fill="#EAF1F7" stroke="#B8C4CE"/>
+        <text class="sacX" x="44" y="64">jr · 90k</text>
+        <text class="sacX" x="44" y="84">sr · 150k</text>
+        <text class="sacX" x="44" y="104">jr · 100k</text>
+        <text class="sacX" x="44" y="124">sr · 160k</text>
+        <text class="sacX" x="44" y="144">jr · 95k</text>
+        <!-- split into two groups -->
+        <rect x="330" y="42" width="150" height="52" rx="8" fill="#3776AB"/>
+        <text class="sacV" x="344" y="63">group: junior</text>
+        <text class="sacV" x="344" y="82">90k · 100k · 95k</text>
+        <rect x="330" y="108" width="150" height="52" rx="8" fill="#4B8BBE"/>
+        <text class="sacV" x="344" y="129">group: senior</text>
+        <text class="sacV" x="344" y="148">150k · 160k</text>
+        <!-- combine -->
+        <rect x="660" y="42" width="190" height="118" rx="8" fill="#1E4A73"/>
+        <text class="sacT" x="678" y="70">junior -&gt; 95k</text>
+        <text class="sacT" x="678" y="100">senior -&gt; 155k</text>
+        <text class="sacV" x="678" y="132" style="opacity:.85">median per group</text>
+        <!-- arrows -->
+        <line class="sacA" x1="182" y1="102" x2="326" y2="68"/>
+        <line class="sacA" x1="182" y1="102" x2="326" y2="134"/>
+        <line class="sacA" x1="482" y1="68" x2="656" y2="85"/>
+        <line class="sacA" x1="482" y1="134" x2="656" y2="115"/>
+        <text class="sacX" x="510" y="200">.groupby("level")["salary"].median()</text>
+        <rect x="30" y="262" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="sacN" x="52" y="274">One line, three moves: split rows by a key, apply a function to each group, combine into a summary.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - split-apply-combine: the engine under every groupby you'll ever write</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>groupby, agg, and sorting the answer<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The basic form is <code>df.groupby("key")["value"].func()</code>. Where it gets powerful:</p>
+        <ul>
+          <li><strong>Multiple functions at once</strong> with <code>.agg()</code>: <code>df.groupby("level")["salary_year"].agg(["median", "count"])</code> gives you the typical pay <em>and</em> how many postings back that number - always report both.</li>
+          <li><strong>Group by several keys</strong>: <code>groupby(["level", "remote"])</code> nests the split.</li>
+          <li><strong>Sort the result</strong> with <code>.sort_values("median", ascending=False)</code> or grab the extremes with <code>.nlargest(10)</code>. A groupby result is just another frame - you keep working on it.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>On the LinkedIn data, <code>jobs.groupby("experience_level")["salary_year"].median()</code> answers a question people actually care about in one line: does the pay ladder climb the way you'd expect from entry to director? The <code>count</code> alongside it keeps you honest - a "median" backed by 12 postings is a rumor, not a finding.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why count belongs next to every average<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>An aggregate hides its sample size. A group of 5,000 postings and a group of 8 both collapse to a single median, and on a chart they look equally solid. Always carry the count: <code>.agg(["median", "count"])</code>. In your Session 8 report, a footnote of group sizes is the difference between "credible" and "made up." Small groups are where confident wrong conclusions live.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: PIVOT + RESHAPE ============ -->
+  <section class="section" id="pivot">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers pivot_table, crosstab, melt</span>
+      <h2>Pivot tables and reshaping <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">groupby gives you a list of answers; a pivot table lays them out as a readable 2D grid. Same computation, better shape for the eye - and the reverse move, melt, turns wide back to long when a tool needs it.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wide versus long: melt turns a wide grid into long tidy rows, pivot turns long rows back into a wide grid">
+        <style>
+          .rshH { font: 700 12.5px Inter, sans-serif; fill: #14202B; }
+          .rshC { font: 400 11px Inter, sans-serif; fill: #14202B; }
+          .rshV { font: 600 11.5px Inter, sans-serif; fill: #FFFFFF; }
+          .rshL { font: 600 12px Inter, sans-serif; fill: #3776AB; }
+          .rshN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+          .rshA { stroke: #B8C4CE; stroke-width: 2; fill: none; marker-end: url(#rshAh); }
+        </style>
+        <defs>
+          <marker id="rshAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#B8C4CE" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <!-- WIDE grid -->
+        <text class="rshH" x="40" y="30">Wide - a pivot grid, easy to read</text>
+        <rect x="40" y="44" width="300" height="120" rx="8" fill="#EAF1F7" stroke="#B8C4CE"/>
+        <rect x="40" y="44" width="300" height="30" fill="#3776AB"/>
+        <text class="rshV" x="150" y="63">remote</text>
+        <text class="rshV" x="250" y="63">onsite</text>
+        <text class="rshC" x="52" y="98">junior</text>
+        <text class="rshC" x="150" y="98">98k</text>
+        <text class="rshC" x="250" y="98">92k</text>
+        <text class="rshC" x="52" y="132">senior</text>
+        <text class="rshC" x="150" y="132">165k</text>
+        <text class="rshC" x="250" y="132">150k</text>
+        <!-- LONG table -->
+        <text class="rshH" x="540" y="30">Long - tidy rows, easy for tools</text>
+        <rect x="540" y="44" width="300" height="150" rx="8" fill="#EAF1F7" stroke="#B8C4CE"/>
+        <text class="rshC" x="552" y="66">junior · remote · 98k</text>
+        <text class="rshC" x="552" y="90">junior · onsite · 92k</text>
+        <text class="rshC" x="552" y="114">senior · remote · 165k</text>
+        <text class="rshC" x="552" y="138">senior · onsite · 150k</text>
+        <text class="rshC" x="552" y="176" style="fill:#5A6B78">one row per combination</text>
+        <!-- arrows -->
+        <line class="rshA" x1="345" y1="90" x2="535" y2="90"/>
+        <text class="rshL" x="392" y="82">melt -&gt;</text>
+        <line class="rshA" x1="535" y1="140" x2="345" y2="140"/>
+        <text class="rshL" x="392" y="158">&lt;- pivot</text>
+        <rect x="40" y="262" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="rshN" x="62" y="274">Same numbers, two shapes: pivot_table for humans to read, melt for tools to consume.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - wide vs long: pivot reshapes long rows into a grid, melt unpivots a grid back to tidy rows</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>pivot_table, crosstab, and when to use which<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong><code>pivot_table(index=, columns=, values=, aggfunc=)</code></strong> - the workhorse. <code>index</code> becomes the rows, <code>columns</code> the columns, and each cell is <code>aggfunc</code> applied to <code>values</code> for that combination. It's groupby-on-two-keys, laid out as a grid.</li>
+          <li><strong><code>pd.crosstab(a, b)</code></strong> - a shortcut for counting combinations (a frequency table). Reach for it when you just want "how many postings are remote × senior."</li>
+          <li><strong><code>melt</code> vs <code>pivot</code></strong> - <code>melt</code> goes wide -&gt; long (many columns collapse into key/value rows), <code>pivot</code> goes long -&gt; wide. Charting libraries usually want long; humans usually want wide.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>pivot_table beats pivot on real data</strong>
+          Plain <code>pivot</code> errors if any index/column pair repeats. <code>pivot_table</code> takes an <code>aggfunc</code> so duplicates get summarized instead of crashing - on messy real data, reach for <code>pivot_table</code> by default.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: JOINING TABLES ============ -->
+  <section class="section" id="joins">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers merge, join, concat</span>
+      <h2>Joining the tables <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">The dataset isn't one table - it's several that share key columns: postings, companies, skills, salaries. The full picture only appears when you stitch them together on those keys. That's what <code>merge</code> does.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A left join: the postings table keeps all its rows and matches company size from the companies table on company_id">
+        <style>
+          .jnH { font: 700 12.5px Inter, sans-serif; fill: #14202B; }
+          .jnHd { font: 700 11.5px Inter, sans-serif; fill: #FFFFFF; }
+          .jnC { font: 400 11px Inter, sans-serif; fill: #14202B; }
+          .jnK { font: 700 11px Inter, sans-serif; fill: #E6A700; }
+          .jnN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+          .jnA { stroke: #B8C4CE; stroke-width: 2; fill: none; marker-end: url(#jnAh); }
+        </style>
+        <defs>
+          <marker id="jnAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#B8C4CE" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <!-- left table: postings -->
+        <text class="jnH" x="30" y="28">postings (keep all)</text>
+        <rect x="30" y="40" width="220" height="110" rx="8" fill="#EAF1F7" stroke="#B8C4CE"/>
+        <rect x="30" y="40" width="220" height="26" fill="#3776AB"/>
+        <text class="jnHd" x="44" y="58">company_id · title</text>
+        <text class="jnK" x="44" y="90">C1</text><text class="jnC" x="80" y="90">· data analyst</text>
+        <text class="jnK" x="44" y="114">C2</text><text class="jnC" x="80" y="114">· ml engineer</text>
+        <text class="jnK" x="44" y="138">C1</text><text class="jnC" x="80" y="138">· data eng</text>
+        <!-- right table: companies -->
+        <text class="jnH" x="330" y="28">companies (lookup)</text>
+        <rect x="330" y="40" width="200" height="110" rx="8" fill="#EAF1F7" stroke="#B8C4CE"/>
+        <rect x="330" y="40" width="200" height="26" fill="#4B8BBE"/>
+        <text class="jnHd" x="344" y="58">company_id · size</text>
+        <text class="jnK" x="344" y="90">C1</text><text class="jnC" x="380" y="90">· large</text>
+        <text class="jnK" x="344" y="114">C2</text><text class="jnC" x="380" y="114">· startup</text>
+        <!-- merged result -->
+        <text class="jnH" x="610" y="28">merged on company_id</text>
+        <rect x="610" y="40" width="240" height="134" rx="8" fill="#1E4A73"/>
+        <text class="jnHd" x="624" y="62">title · size</text>
+        <text class="jnHd" x="624" y="90" style="opacity:.92">data analyst · large</text>
+        <text class="jnHd" x="624" y="114" style="opacity:.92">ml engineer · startup</text>
+        <text class="jnHd" x="624" y="138" style="opacity:.92">data eng · large</text>
+        <text class="jnHd" x="624" y="162" style="opacity:.7">C1 matched twice (one-to-many)</text>
+        <line class="jnA" x1="252" y1="95" x2="326" y2="95"/>
+        <line class="jnA" x1="532" y1="95" x2="606" y2="95"/>
+        <rect x="30" y="262" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="jnN" x="52" y="274">how="left" keeps every posting; one company matches many postings - a one-to-many join.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a left join on company_id: every posting kept, company size looked up and attached</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The four join types and the keys<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><code>pd.merge(left, right, on="key", how=...)</code> combines two frames on a shared column. The <code>how</code> decides which rows survive:</p>
+        <ul>
+          <li><strong>inner</strong> - only rows with a match on both sides. The safe default when you need complete pairs.</li>
+          <li><strong>left</strong> - keep <em>all</em> left rows, attach right where it matches, <code>NaN</code> where it doesn't. This is the everyday analyst join: keep every posting, enrich it.</li>
+          <li><strong>right / outer</strong> - keep all right rows / keep everything from both.</li>
+          <li><strong>keys</strong> - <code>on="company_id"</code> when both sides name it the same; <code>left_on=/right_on=</code> when they differ. Watch <strong>one-to-many</strong>: one company matched to many postings multiplies rows - expected here, but always check the shape after.</li>
+        </ul>
+        <p><code>pd.concat([a, b])</code> is different - it <em>stacks</em> frames with the same columns (more rows) rather than matching on a key. Use it to append, not to enrich.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Join <code>company_size</code> onto postings with a left join on <code>company_id</code>, then group by size and take the median <code>salary_year</code> - and you've answered "do bigger companies pay more?" with your own data. The left join guarantees you don't quietly drop postings whose company is missing from the lookup table; they just get a <code>NaN</code> size you can filter later.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Highest-paying roles by group <span class="tag demo">★ 8 min · everyone groups</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Load your cleaned frame from Session 4 and keep only rows that disclosed pay.</p></div>
+      <div class="step"><p>Group by experience level and a title bucket, take median pay and count, then sort.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Median pay + count per group, ranked</span>jobs = pd.read_csv("postings_clean.csv")
+paid = jobs[jobs["salary_year"].notna()]      # the salaried subset
+
+# a rough title bucket from the free text
+paid = paid.assign(
+    role=paid["title"].str.extract(r"(analyst|engineer|scientist|manager)", expand=False)
+)
+
+summary = (paid.groupby(["experience_level", "role"])["salary_year"]
+                .agg(["median", "count"])
+                .sort_values("median", ascending=False))
+summary.head(15)</div>
+    <div class="callout tip">
+      <strong>Read the count column first</strong>
+      Before you get excited about a $220k median, glance at its count. A top row backed by 9 postings is noise; one backed by 3,000 is a finding. Filter out tiny groups (<code>summary[summary["count"] &gt;= 50]</code>) before you quote a number.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>The most-demanded skills <span class="tag demo">★ 7 min · everyone merges</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>The skills live in their own table keyed to <code>job_id</code>. Merge it onto postings, then count.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Merge skills, then rank demand</span>skills = pd.read_csv("job_skills.csv")     # one skill per row, keyed by job_id
+
+# attach postings info to each skill row (left keeps every skill listing)
+merged = pd.merge(skills, jobs[["job_id", "title"]], on="job_id", how="left")
+
+# if skills are one-per-row, a plain value_counts IS the ranking
+top15 = merged["skill_name"].value_counts().head(15)
+top15</div>
+    <div class="steps">
+      <div class="step"><p>If a posting stores several skills in one cell instead, split and <code>explode</code> first: <code>df.assign(skill=df["skills"].str.split(",")).explode("skill")</code>, then <code>value_counts</code>.</p></div>
+    </div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>This is the finding people screenshot: the top 15 skills across 124k postings, ranked. SQL and Python usually fight for the top; the surprises further down (a cloud platform, a BI tool) are what make the post worth reading. You built it with one merge and one <code>value_counts</code>.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Pay pivot: experience × remote <span class="tag demo">★ 6 min · follow along</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Lay median pay out as a grid so the story reads at a glance.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ pivot_table of median pay, then save it</span>grid = paid.pivot_table(
+    index="experience_level",
+    columns="remote_allowed",
+    values="salary_year",
+    aggfunc="median",
+)
+grid    # rows = experience, columns = remote vs onsite, cells = median pay</div>
+    <div class="steps">
+      <div class="step"><p>Read the story out of the grid: does remote pay more at every level, or only for senior roles? Note what you see.</p></div>
+      <div class="step"><p>Save the summary frames - Session 6 turns these exact tables into charts.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Persist the summaries for charting</span>summary.to_csv("summary_pay_by_role.csv")
+top15.to_csv("summary_top_skills.csv")
+grid.to_csv("summary_pay_pivot.csv")</div>
+    <div class="callout tip">
+      <strong>A summary frame is a deliverable</strong>
+      Each of these small tables answers one project question and feeds one Session 6 chart. Saving them means your exploration and your visuals never drift out of sync - the chart plots exactly the number you reported.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 40 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Kaggle Pandas Lessons 4 &amp; 6</strong> - Grouping &amp; Sorting, then Renaming &amp; Combining. These are exactly groupby and merge, with good reps.</li>
+      <li><strong>Answer three project questions</strong> on your own joined data, in a notebook: (1) the top-paying roles, (2) the most-demanded skills, (3) the remote-vs-onsite pay gap. Save each as a summary frame.</li>
+      <li><strong>Write one sentence per finding</strong> - the plain-English takeaway. These sentences become your Session 8 report bullets.</li>
+      <li><strong>Read McKinney ch8 (Join, Combine, Reshape) and ch10 (Aggregation &amp; Group Operations)</strong> - the canonical references for today.</li>
+      <li><strong>Optional:</strong> try grouping by a third key (location or company size) and see which cut of the data surprises you most.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · What does "split-apply-combine" actually mean?</p>
+      <button class="qopt" type="button">A · Split the file into chunks, apply compression, combine into a zip</button>
+      <button class="qopt" type="button">B · Sort the rows, apply a filter, then merge two tables</button>
+      <button class="qopt" type="button">C · Split rows into groups by a key, apply a function to each group, combine results into a summary</button>
+      <p class="qwhy">That's the engine under every groupby: split by the key, apply the aggregate per group, combine the per-group answers into one summary frame.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">2 · Which merge keeps every row from the left table and matches the right where it can?</p>
+      <button class="qopt" type="button">A · An inner join, how="inner"</button>
+      <button class="qopt" type="button">B · A left join, how="left"</button>
+      <button class="qopt" type="button">C · A concat along axis=0</button>
+      <p class="qwhy">how="left" keeps all left rows and fills NaN where the right side has no match - the everyday "keep every posting, enrich it" join.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · How does pivot_table differ from a plain groupby?</p>
+      <button class="qopt" type="button">A · pivot_table reshapes group results into a 2D grid by index × columns; groupby returns a series/frame keyed by the group</button>
+      <button class="qopt" type="button">B · pivot_table can only count, never average</button>
+      <button class="qopt" type="button">C · There is no difference - they are aliases</button>
+      <p class="qwhy">Same computation, different shape: pivot_table spreads two grouping keys across rows and columns for the eye; groupby hands back a result indexed by the group.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ OFFICIAL SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the working content of the pandas groupby, merge/join/concat, and pivot guides, the free Kaggle Pandas micro-course, and Wes McKinney's open-access <a href="https://wesmckinney.com/book/">Python for Data Analysis (3e)</a>. Certificates and graded exercises stay on those platforms - links provided.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Kaggle Pandas L4 &amp; L6 - Grouping &amp; Sorting, Renaming &amp; Combining</span><span class="note">groupby, agg, sort, merge - Parts 1 &amp; 3 + Demos</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">pandas guides - groupby + merge/join/concat + pivot</span><span class="note">split-apply-combine, join types, reshaping - all parts</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">McKinney ch10 - Data Aggregation &amp; Group Operations</span><span class="note">groupby mechanics, agg, pivot_table - Parts 1-2</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">McKinney ch8 - Data Wrangling: Join, Combine, Reshape</span><span class="note">merge, concat, melt vs pivot - Parts 2-3</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">pandas hierarchical index (MultiIndex)</span><span class="note">appears from multi-key groupby; worked at a practical level, not exhaustively</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 5 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>groupby + agg</b><span>df.groupby("key")["val"].agg(["median", "count"]) - always carry the count next to the average.</span></div>
+      <div class="cheat-item"><b>Sort / top-N</b><span>result.sort_values("median", ascending=False) · or .nlargest(10) to grab the extremes.</span></div>
+      <div class="cheat-item"><b>pivot_table</b><span>df.pivot_table(index=, columns=, values=, aggfunc="median") - two grouping keys laid out as a readable grid.</span></div>
+      <div class="cheat-item"><b>merge</b><span>pd.merge(left, right, on="company_id", how="left") - inner/left/right/outer picks which rows survive.</span></div>
+      <div class="cheat-item"><b>concat</b><span>pd.concat([a, b]) - stack frames with the same columns (more rows). Append, don't enrich.</span></div>
+      <div class="cheat-item"><b>melt vs pivot</b><span>melt = wide -&gt; long (tidy rows for tools) · pivot = long -&gt; wide (grid for humans).</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 5 of 8 · learn-python-data-analysis-with-phoebe · by Phoebe Fu</span>
+    <span><a href="04-cleaning-messy-data.html">← Prev: Cleaning messy data</a> &nbsp;·&nbsp; <a href="06-matplotlib-fundamentals.html">Next: Matplotlib fundamentals →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

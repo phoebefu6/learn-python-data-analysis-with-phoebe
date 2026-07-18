@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 7 · Seaborn and the polish - learn python data analysis with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-python-data-analysis-with-phoebe</a> / Session 7 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Python Data Analysis with Phoebe · Session 7 of 8</div>
+    <h1>Seaborn and <span class="accent">the polish</span></h1>
+    <p class="sub">You can hand-build a labeled chart in matplotlib now. Seaborn does in one line what that took ten - and it understands DataFrames and categories natively. This session turns your job-market frame into publication-grade statistical charts: distributions split by group, a correlation heatmap, and a cohesive themed set ready for the Session 8 report.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Getting real</span>
+      <span class="chip audience">Builders</span>
+      <span class="chip audience">Statistical charts</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build-along demos</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>One line, not ten</h2>
+    </div>
+    <p class="lede">Matplotlib gave you the engine and the control. Seaborn gives you the shortcut. Where matplotlib made you count values, bin them, and place bars by hand, seaborn takes <code>data=df</code> plus the column <em>names</em> and does the statistics for you - it groups, computes confidence intervals, builds the legend, and picks sensible defaults. It's not a replacement for matplotlib; it sits on top of it. That means everything you learned last session - fig, ax, set_title, savefig - still works, and now the hard parts get one-liners.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">The project: the data job market</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Publication-grade statistical charts of your frame - salary distributions split by experience level, a correlation heatmap that reveals what relates to what, and a faceted set of small multiples - all wearing one cohesive theme and palette, saved as PNG and SVG for the report.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: WHY SEABORN, FIGURE VS AXES LEVEL ============ -->
+  <section class="section" id="why-seaborn">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the seaborn interface model</span>
+      <h2>Why seaborn, and figure- vs axes-level <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Seaborn has two families of functions, and knowing which family you're calling is the one concept that saves the most confusion. Learn it now.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two lanes comparing axes-level seaborn functions that draw on one ax against figure-level functions that manage their own figure and facet">
+        <style>
+          .sbT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .sbS { font: 400 12px Inter, sans-serif; fill: #FFFFFF; opacity: .92; }
+          .sbF { font: 600 12.5px Inter, sans-serif; fill: #14202B; }
+          .sbM { font: 400 11.5px Inter, sans-serif; fill: #5A6B78; }
+          .sbCode { font: 600 12px "SFMono-Regular", Consolas, monospace; fill: #FFFFFF; }
+          .sbN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <!-- axes-level lane -->
+        <rect x="20" y="30" width="410" height="270" rx="12" fill="#EAF1F7" stroke="#3776AB" stroke-width="1.5"/>
+        <rect x="20" y="30" width="410" height="52" rx="12" fill="#3776AB"/>
+        <text class="sbT" x="42" y="55">Axes-level</text>
+        <text class="sbS" x="42" y="73">draws onto an ax you already have</text>
+        <text class="sbF" x="42" y="112">scatterplot()</text>
+        <text class="sbF" x="42" y="138">histplot() · kdeplot()</text>
+        <text class="sbF" x="42" y="164">boxplot() · violinplot()</text>
+        <text class="sbF" x="42" y="190">barplot() · countplot()</text>
+        <rect x="42" y="212" width="366" height="66" rx="8" fill="#3776AB"/>
+        <text class="sbCode" x="58" y="238">fig, ax = plt.subplots()</text>
+        <text class="sbCode" x="58" y="262">sns.boxplot(data=df, x=.., y=.., ax=ax)</text>
+        <!-- figure-level lane -->
+        <rect x="450" y="30" width="410" height="270" rx="12" fill="#EAF1F7" stroke="#1E4A73" stroke-width="1.5"/>
+        <rect x="450" y="30" width="410" height="52" rx="12" fill="#1E4A73"/>
+        <text class="sbT" x="472" y="55">Figure-level</text>
+        <text class="sbS" x="472" y="73">manages its own figure + faceting</text>
+        <text class="sbF" x="472" y="112">relplot()  → scatter / line</text>
+        <text class="sbF" x="472" y="138">displot()  → hist / kde</text>
+        <text class="sbF" x="472" y="164">catplot()  → box / violin / bar</text>
+        <text class="sbM" x="472" y="190">facet with col= and row=</text>
+        <rect x="472" y="212" width="366" height="66" rx="8" fill="#1E4A73"/>
+        <text class="sbCode" x="488" y="238">sns.displot(data=df, x=..,</text>
+        <text class="sbCode" x="488" y="262">            col="role_bucket")</text>
+        <!-- note square -->
+        <rect x="20" y="330" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="sbN" x="42" y="342">Axes-level fits into your own figure; figure-level owns the figure and does the faceting.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - axes-level functions draw onto your ax; figure-level functions own the whole figure and facet for you</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Data-aware, and two function families<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two things make seaborn feel like a level-up:</p>
+        <ul>
+          <li><strong>It speaks DataFrame.</strong> You pass <code>data=df</code> and the column <em>names</em> as strings - <code>x="experience_level", y="salary_year", hue="remote"</code>. Seaborn does the grouping, the aggregation, the confidence intervals, and the legend. No more counting and binning by hand.</li>
+          <li><strong>It has two function families.</strong> <em>Axes-level</em> functions (<code>scatterplot</code>, <code>histplot</code>, <code>boxplot</code>, <code>barplot</code>) draw onto an <code>ax</code> you pass in - they slot into the matplotlib workflow you already know. <em>Figure-level</em> functions (<code>relplot</code>, <code>displot</code>, <code>catplot</code>) create and manage their own figure, and can split your data into a grid of small multiples with <code>col=</code> and <code>row=</code>.</li>
+        </ul>
+        <p>Rule of thumb: reach for axes-level when you're placing one chart into a layout you control; reach for figure-level when you want faceting done for you.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Which family, when<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th>You want...</th><th>Family</th><th>Function</th></tr></thead>
+          <tbody>
+            <tr><td>one chart inside my own fig, ax</td><td>axes-level</td><td>boxplot, histplot, scatterplot, barplot</td></tr>
+            <tr><td>the same chart split across categories</td><td>figure-level</td><td>catplot, displot, relplot with col= / row=</td></tr>
+            <tr><td>fine control over a multi-panel layout</td><td>axes-level</td><td>draw each panel onto its own ax</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>The gotcha</strong>
+          Figure-level functions don't take an <code>ax=</code> argument - they own the figure. If you try to drop <code>relplot</code> into a subplot grid it won't fit. That single fact explains most "why won't my seaborn chart go where I put it" confusion.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: CORE PLOTS ============ -->
+  <section class="section" id="core-plots">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the core statistical plots</span>
+      <h2>The core plots on real data <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">A handful of seaborn plots answer most job-market questions. Each maps to a question - pick the plot by what you're asking.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four seaborn plots in a two by two grid: histplot for distribution, boxplot for group comparison, barplot with confidence interval, scatterplot with hue">
+        <style>
+          .cpT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .cpU { font: 400 11.5px Inter, sans-serif; fill: #FFFFFF; opacity: .92; }
+          .cpN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <!-- histplot / kdeplot -->
+        <rect x="20" y="20" width="410" height="135" rx="10" fill="#1E4A73"/>
+        <text class="cpT" x="38" y="46">histplot / kdeplot</text>
+        <text class="cpU" x="38" y="64">Q: how does salary spread?</text>
+        <rect x="250" y="118" width="20" height="17" fill="#8FB8D6"/>
+        <rect x="272" y="96" width="20" height="39" fill="#8FB8D6"/>
+        <rect x="294" y="80" width="20" height="55" fill="#8FB8D6"/>
+        <rect x="316" y="100" width="20" height="35" fill="#8FB8D6"/>
+        <rect x="338" y="116" width="20" height="19" fill="#8FB8D6"/>
+        <path d="M250 116 Q294 70 316 96 T410 124" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+        <!-- boxplot / violinplot -->
+        <rect x="450" y="20" width="410" height="135" rx="10" fill="#3776AB"/>
+        <text class="cpT" x="468" y="46">boxplot / violinplot</text>
+        <text class="cpU" x="468" y="64">Q: salary by experience level?</text>
+        <line x1="690" y1="80" x2="690" y2="132" stroke="#FFFFFF" stroke-width="1.5"/>
+        <rect x="678" y="95" width="24" height="24" fill="#8FB8D6"/>
+        <line x1="678" y1="107" x2="702" y2="107" stroke="#FFFFFF" stroke-width="2"/>
+        <line x1="760" y1="72" x2="760" y2="128" stroke="#FFFFFF" stroke-width="1.5"/>
+        <rect x="748" y="86" width="24" height="26" fill="#8FB8D6"/>
+        <line x1="748" y1="98" x2="772" y2="98" stroke="#FFFFFF" stroke-width="2"/>
+        <line x1="825" y1="66" x2="825" y2="120" stroke="#FFFFFF" stroke-width="1.5"/>
+        <rect x="813" y="78" width="24" height="24" fill="#8FB8D6"/>
+        <line x1="813" y1="90" x2="837" y2="90" stroke="#FFFFFF" stroke-width="2"/>
+        <!-- barplot -->
+        <rect x="20" y="170" width="410" height="135" rx="10" fill="#4B8BBE"/>
+        <text class="cpT" x="38" y="196">barplot (with CI)</text>
+        <text class="cpU" x="38" y="214">Q: mean salary by role?</text>
+        <rect x="270" y="255" width="28" height="30" fill="#FFFFFF"/>
+        <line x1="284" y1="248" x2="284" y2="262" stroke="#1E4A73" stroke-width="2"/>
+        <rect x="330" y="238" width="28" height="47" fill="#FFFFFF"/>
+        <line x1="344" y1="231" x2="344" y2="245" stroke="#1E4A73" stroke-width="2"/>
+        <rect x="390" y="248" width="28" height="37" fill="#FFFFFF"/>
+        <line x1="404" y1="241" x2="404" y2="255" stroke="#1E4A73" stroke-width="2"/>
+        <!-- scatterplot with hue -->
+        <rect x="450" y="170" width="410" height="135" rx="10" fill="#8FB8D6"/>
+        <text class="cpT" x="468" y="196" style="fill:#14202B">scatterplot (hue)</text>
+        <text class="cpU" x="468" y="214" style="fill:#14202B">Q: salary vs size, by remote?</text>
+        <circle cx="700" cy="272" r="4" fill="#1E4A73"/>
+        <circle cx="730" cy="258" r="4" fill="#1E4A73"/>
+        <circle cx="760" cy="262" r="4" fill="#E6A700"/>
+        <circle cx="790" cy="244" r="4" fill="#E6A700"/>
+        <circle cx="815" cy="250" r="4" fill="#1E4A73"/>
+        <circle cx="838" cy="236" r="4" fill="#E6A700"/>
+        <!-- note square -->
+        <rect x="20" y="316" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="cpN" x="42" y="328">hue adds a categorical split; the legend is built for you.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - four seaborn plots, each labeled with the job-market question it answers</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The plot-to-question map<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>histplot / kdeplot</strong> - the spread of one number (salary_year), smooth curve optional.</li>
+          <li><strong>boxplot / violinplot</strong> - a numeric column split by a category (salary by experience_level). Box shows median and quartiles; violin adds the full shape.</li>
+          <li><strong>barplot</strong> - the mean of a value per category, with a confidence-interval whisker seaborn computes for free (mean salary by role).</li>
+          <li><strong>scatterplot</strong> - two numbers, with an optional <code>hue=</code> to color a third categorical dimension (salary vs company size, colored by remote).</li>
+          <li><strong>countplot</strong> - just how many rows per category, the seaborn one-liner for a frequency bar.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A boxplot of salary by experience_level tells the whole seniority-pay story in one glance: you see the median step up from entry to senior, and the boxes show how much the ranges overlap. That single chart often answers the loudest question in any "state of the job market" post - "does seniority actually pay?" - with evidence instead of a vibe.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>hue, and how seaborn does stats for you<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two things seaborn quietly handles that you'd hand-code in matplotlib:</p>
+        <ul>
+          <li><strong>hue=</strong> splits any plot by a categorical column and builds the color legend automatically. One argument, and a boxplot of salary by experience becomes salary by experience <em>and</em> remote status.</li>
+          <li><strong>Confidence intervals</strong> - <code>barplot</code> and <code>lineplot</code> aggregate and draw the CI whisker by default, so a "mean salary by role" chart honestly shows how uncertain each mean is. That's statistics baked into the plotting call.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: HEATMAPS, THEMES, POLISH ============ -->
+  <section class="section" id="heatmaps-themes">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers heatmaps and theming</span>
+      <h2>Heatmaps, themes, and polish <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Two finishing moves: the correlation heatmap that scans your whole numeric frame at once, and the theme that makes every chart in the report look like one family.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A five by five correlation matrix with shaded cells from light to dark blue and annotated values">
+        <style>
+          .hmT { font: 700 13px Inter, sans-serif; fill: #14202B; }
+          .hmLbl { font: 400 10.5px Inter, sans-serif; fill: #5A6B78; }
+          .hmVal { font: 600 11px Inter, sans-serif; fill: #FFFFFF; }
+          .hmValD { font: 600 11px Inter, sans-serif; fill: #14202B; }
+          .hmN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <text class="hmT" x="250" y="30">Correlation heatmap - df.corr()</text>
+        <!-- column labels -->
+        <text class="hmLbl" x="270" y="58">salary</text>
+        <text class="hmLbl" x="350" y="58">size</text>
+        <text class="hmLbl" x="425" y="58">views</text>
+        <text class="hmLbl" x="500" y="58">applies</text>
+        <!-- row labels -->
+        <text class="hmLbl" x="205" y="90">salary</text>
+        <text class="hmLbl" x="215" y="150">size</text>
+        <text class="hmLbl" x="208" y="210">views</text>
+        <text class="hmLbl" x="198" y="270">applies</text>
+        <!-- row salary -->
+        <rect x="255" y="70" width="56" height="52" fill="#1E4A73"/><text class="hmVal" x="272" y="100">1.0</text>
+        <rect x="325" y="70" width="56" height="52" fill="#4B8BBE"/><text class="hmVal" x="340" y="100">.42</text>
+        <rect x="395" y="70" width="56" height="52" fill="#8FB8D6"/><text class="hmValD" x="410" y="100">.18</text>
+        <rect x="465" y="70" width="56" height="52" fill="#8FB8D6"/><text class="hmValD" x="480" y="100">.21</text>
+        <!-- row size -->
+        <rect x="255" y="130" width="56" height="52" fill="#4B8BBE"/><text class="hmVal" x="272" y="160">.42</text>
+        <rect x="325" y="130" width="56" height="52" fill="#1E4A73"/><text class="hmVal" x="340" y="160">1.0</text>
+        <rect x="395" y="130" width="56" height="52" fill="#8FB8D6"/><text class="hmValD" x="410" y="160">.09</text>
+        <rect x="465" y="130" width="56" height="52" fill="#EAF1F7"/><text class="hmValD" x="480" y="160">.05</text>
+        <!-- row views -->
+        <rect x="255" y="190" width="56" height="52" fill="#8FB8D6"/><text class="hmValD" x="272" y="220">.18</text>
+        <rect x="325" y="190" width="56" height="52" fill="#8FB8D6"/><text class="hmValD" x="340" y="220">.09</text>
+        <rect x="395" y="190" width="56" height="52" fill="#1E4A73"/><text class="hmVal" x="410" y="220">1.0</text>
+        <rect x="465" y="190" width="56" height="52" fill="#3776AB"/><text class="hmVal" x="480" y="220">.66</text>
+        <!-- row applies -->
+        <rect x="255" y="250" width="56" height="52" fill="#8FB8D6"/><text class="hmValD" x="272" y="280">.21</text>
+        <rect x="325" y="250" width="56" height="52" fill="#EAF1F7"/><text class="hmValD" x="340" y="280">.05</text>
+        <rect x="395" y="250" width="56" height="52" fill="#3776AB"/><text class="hmVal" x="410" y="280">.66</text>
+        <rect x="465" y="250" width="56" height="52" fill="#1E4A73"/><text class="hmVal" x="480" y="280">1.0</text>
+        <!-- ramp legend -->
+        <text class="hmLbl" x="580" y="90">weak</text>
+        <rect x="580" y="98" width="24" height="20" fill="#EAF1F7"/>
+        <rect x="580" y="118" width="24" height="20" fill="#8FB8D6"/>
+        <rect x="580" y="138" width="24" height="20" fill="#4B8BBE"/>
+        <rect x="580" y="158" width="24" height="20" fill="#3776AB"/>
+        <rect x="580" y="178" width="24" height="20" fill="#1E4A73"/>
+        <text class="hmLbl" x="580" y="214">strong</text>
+        <!-- note square -->
+        <rect x="20" y="296" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="hmN" x="42" y="308">Darker = stronger correlation; one glance shows what moves with what.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a correlation heatmap: each shaded, annotated cell is how strongly two numeric columns move together</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The heatmap, and one theme to rule them<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ Correlation heatmap + a set theme</span>import seaborn as sns
+
+# one cohesive look for every chart in the report
+sns.set_theme(style="whitegrid", palette="Blues", context="talk")
+
+corr = jobs[["salary_year", "company_size", "views", "applies"]].corr()
+ax = sns.heatmap(corr, annot=True, cmap="Blues", fmt=".2f")
+ax.set_title("What relates to what - numeric columns")</div>
+        <p><code>df.corr()</code> gives you the pairwise correlation matrix; <code>sns.heatmap(..., annot=True)</code> shades and numbers every cell so a reader sees strength and sign at a glance. And <code>sns.set_theme()</code> at the top of the notebook sets style, palette, and context (label sizing) for <em>every</em> chart after it - one line, one consistent look.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Palette discipline and despine<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>One meaning per color.</strong> If blue means "remote" in one chart, it means "remote" in every chart - and you add a legend so the reader never guesses. This is the workspace encoding rule, and seaborn's <code>palette=</code> makes it easy to keep.</li>
+          <li><strong>set_theme(style, palette, context)</strong> - <code>style</code> is the background (whitegrid, ticks...), <code>palette</code> is the color set, <code>context</code> scales fonts for a deck vs a paper.</li>
+          <li><strong>sns.despine()</strong> removes the top and right spines for a cleaner, more modern frame.</li>
+          <li>Saving is unchanged from Session 6 - grab the figure and <code>savefig(dpi=300)</code> as PNG and SVG.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A correlation heatmap of your numeric columns is the fastest "what relates to what" scan there is. On the job data it might show salary moving with company size but barely with view count - a finding you'd never spot scrolling rows, and one that earns a line in the Session 8 report.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Salary by experience, then split by remote <span class="tag demo">★ 7 min · everyone codes</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Set the theme once so the whole session looks consistent.</p></div>
+      <div class="step"><p>Draw a boxplot of salary_year across experience_level - read the seniority-pay story.</p></div>
+      <div class="step"><p>Add <code>hue="remote"</code> and watch seaborn split each box and build the legend for free.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Boxplot, then add a hue</span>import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.set_theme(style="whitegrid", palette="Blues", context="talk")
+salaried = jobs.dropna(subset=["salary_year"])
+
+# 1 - salary by experience level
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.boxplot(data=salaried, x="experience_level", y="salary_year", ax=ax)
+ax.set_title("Advertised salary by experience level")
+ax.set_xlabel("experience level")
+ax.set_ylabel("salary_year (USD)")
+
+# 2 - now split each box by remote status - one extra argument
+fig2, ax2 = plt.subplots(figsize=(11, 6))
+sns.boxplot(data=salaried, x="experience_level", y="salary_year",
+            hue="remote", ax=ax2)
+ax2.set_title("Salary by experience level, split by remote")</div>
+    <div class="callout tip">
+      <strong>Read it out loud</strong>
+      "Median salary steps up entry -> mid -> senior, and remote roles sit a little higher at each level." If your chart lets you say a sentence like that with a straight face, it's working. If the boxes are unreadable, try <code>violinplot</code> or drop the smallest categories.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>A correlation heatmap of the numbers <span class="tag demo">★ 8 min · everyone codes</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Pick your numeric columns - salary, company size, applies, views.</p></div>
+      <div class="step"><p>Compute <code>.corr()</code>, then heatmap it with annotations on.</p></div>
+      <div class="step"><p>Interpret: which pairs move together, which don't, and what that means for the market.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ corr() -> heatmap</span>num_cols = ["salary_year", "company_size", "applies", "views"]
+corr = jobs[num_cols].corr()
+
+fig, ax = plt.subplots(figsize=(7, 6))
+sns.heatmap(corr, annot=True, fmt=".2f", cmap="Blues",
+            vmin=-1, vmax=1, ax=ax)
+ax.set_title("Correlation between numeric columns")
+fig.tight_layout()
+
+fig.savefig("corr-heatmap.png", dpi=300, bbox_inches="tight")
+fig.savefig("corr-heatmap.svg", bbox_inches="tight")</div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>Reading it: a strong positive cell (dark) between views and applies just says popular postings get more clicks - not surprising. The interesting cell is salary vs company_size: if it's moderate and positive, "bigger companies advertise higher pay" becomes a defensible line in your report. The heatmap turned four columns into one scannable claim.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Faceted small multiples with displot <span class="tag demo">★ 7 min · everyone codes</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Use a figure-level function to split the salary distribution across role buckets in one call.</p></div>
+      <div class="step"><p><code>col=</code> makes a panel per category - small multiples without a subplot loop.</p></div>
+      <div class="step"><p>Apply the theme, then save the figure for the report.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ displot faceted by role bucket</span>g = sns.displot(
+    data=salaried,
+    x="salary_year",
+    col="role_bucket",     # one panel per role group
+    col_wrap=3,            # wrap into a tidy grid
+    bins=30,
+    height=3.5,
+)
+g.set_titles("{col_name}")
+g.set_axis_labels("salary_year (USD)", "count")
+g.figure.suptitle("Salary distribution by role bucket", y=1.03)
+
+# figure-level object -> save via .figure
+g.figure.savefig("salary-by-role.png", dpi=300, bbox_inches="tight")
+g.figure.savefig("salary-by-role.svg", bbox_inches="tight")</div>
+    <div class="callout tip">
+      <strong>Figure-level saving</strong>
+      Figure-level calls return a grid object (a FacetGrid), not an Axes. Reach its figure with <code>g.figure</code> to set a super-title or save. That's the practical payoff of the Part 1 distinction - now you know exactly why the save line looks different here.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 40 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Work Kaggle's Data Visualization L1-L6</strong> - Hello Seaborn, Line, Bar &amp; Heatmap, Scatter, Distributions, and Choosing plot types &amp; styles. It's the same ground with graded reps.</li>
+      <li><strong>Rebuild your report's key charts in seaborn on YOUR data</strong> - the boxplot, the heatmap, the faceted distribution. Compare them to your Session 6 matplotlib versions.</li>
+      <li><strong>Pick one cohesive theme and palette</strong> with <code>set_theme</code> and apply it to every chart. One meaning per color, legend on.</li>
+      <li><strong>Save the final chart set</strong> as PNG and SVG. This is the visual half of the Session 8 report - next week you write the words around it.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · What's the main advantage of seaborn over raw matplotlib?</p>
+      <button class="qopt" type="button">A · It can draw chart types matplotlib cannot</button>
+      <button class="qopt" type="button">B · It speaks DataFrames and column names, and does statistical plots - distributions, CIs, faceting - in one line</button>
+      <button class="qopt" type="button">C · It doesn't depend on matplotlib at all</button>
+      <p class="qwhy">Seaborn sits on top of matplotlib. You pass data=df plus column names and it handles the grouping, confidence intervals, legend, and defaults - the statistics come baked in.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What's the difference between figure-level and axes-level functions?</p>
+      <button class="qopt" type="button">A · Figure-level charts are always bigger</button>
+      <button class="qopt" type="button">B · Axes-level functions can't be titled</button>
+      <button class="qopt" type="button">C · Figure-level (relplot / displot / catplot) manage their own figure and can facet with col / row; axes-level (scatterplot / histplot / boxplot) draw onto an existing ax</button>
+      <p class="qwhy">Figure-level functions own the whole figure and do faceting for you - so they don't take ax=. Axes-level functions slot into a fig, ax layout you control.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What does <code>sns.heatmap(df.corr(), annot=True)</code> show?</p>
+      <button class="qopt" type="button">A · The pairwise correlations between numeric columns, color- and number-annotated - a fast what-relates-to-what scan</button>
+      <button class="qopt" type="button">B · The missing values in each column</button>
+      <button class="qopt" type="button">C · A histogram of every numeric column</button>
+      <p class="qwhy">df.corr() builds the correlation matrix; the heatmap shades and labels each cell so you see the strength and sign of every pair at a glance.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ OFFICIAL SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the working content of the official seaborn tutorial and Kaggle's free Data Visualization micro-course. Certificates and the graded final project stay on those platforms - links provided.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">seaborn tutorial - relational, distribution, categorical + themes</span><span class="note">function families, boxplot / histplot / heatmap, set_theme - Parts 1-3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Kaggle Data Visualization L1-L6</span><span class="note">Hello Seaborn, Line, Bar &amp; Heatmap, Scatter, Distributions, Choosing plots - all demos</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">jointplot / PairGrid + custom palettes</span><span class="note">self-study - powerful, but beyond today's core set</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">Kaggle Data Visualization - Final Project</span><span class="note">stays on Kaggle for the certificate</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 7 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Set the look once</b><span>sns.set_theme(style="whitegrid", palette="Blues", context="talk") at the top - every chart inherits it.</span></div>
+      <div class="cheat-item"><b>Speak DataFrame</b><span>Pass data=df plus column names: x="experience_level", y="salary_year", hue="remote".</span></div>
+      <div class="cheat-item"><b>Two families</b><span>Axes-level (scatterplot/histplot/boxplot) draw on an ax; figure-level (relplot/displot/catplot) own the figure.</span></div>
+      <div class="cheat-item"><b>Group distributions</b><span>boxplot / violinplot for a numeric column split by a category - the seniority-pay story in one glance.</span></div>
+      <div class="cheat-item"><b>What relates to what</b><span>sns.heatmap(df.corr(), annot=True, cmap="Blues") - the fastest correlation scan.</span></div>
+      <div class="cheat-item"><b>Small multiples</b><span>displot / catplot with col= / row= facet automatically; save via g.figure.savefig(dpi=300).</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 7 of 8 · learn-python-data-analysis-with-phoebe · by Phoebe Fu</span>
+    <span><a href="06-matplotlib-fundamentals.html">← Prev: Matplotlib fundamentals</a> &nbsp;·&nbsp; <a href="08-insight-to-report.html">Next: Insight to report →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

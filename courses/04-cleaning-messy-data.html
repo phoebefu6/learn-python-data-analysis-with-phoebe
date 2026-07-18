@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 4 · Cleaning messy data - learn python data analysis with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-python-data-analysis-with-phoebe</a> / Session 4 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Python Data Analysis with Phoebe · Session 4 of 8</div>
+    <h1>Cleaning <span class="accent">messy data</span></h1>
+    <p class="sub">This is the session everything before was building toward. You'll see the mess honestly with missingno, decide drop-versus-impute like an analyst instead of a guesser, coerce broken types, tame free-text titles, and turn the split salary columns into one honest yearly number. You walk out with a clean frame you can actually explore next week.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Getting real</span>
+      <span class="chip audience">Builders</span>
+      <span class="chip audience">The 70% missing problem</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Clean the frame</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Real data is dirty, and that's the job</h2>
+    </div>
+    <p class="lede">People imagine analysis is clever models and pretty charts. In reality, cleaning is <strong>roughly 80% of the work</strong> - and it's where analyses go wrong most quietly. A dropped-vs-filled decision made without looking, a salary column mixing hourly and yearly pay, a dtype that's secretly text: none of these throw an error. They just hand you a confident, wrong answer. Today we do it deliberately. We <em>look first</em> with missingno, decide with reasons, and only then touch the data. By the end you have a cleaned frame you can trust - and Session 5 explores it.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">The project: the data job market</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A cleaned DataFrame with a single numeric <code>salary_year</code> column (min/max combined, pay period normalized to annual), sane dtypes across the board, tidy lowercased titles, no duplicate postings, and - just as important - a written record of what you dropped and why. Saved to a new file, raw untouched, ready to explore.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: SEE THE MISSINGNESS ============ -->
+  <section class="section" id="see-missingness">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers missingno + profile-before-fix</span>
+      <h2>See the missingness first <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Before you drop a single row or fill a single gap, look at the shape of what's missing. The rule this course keeps hammering: <strong>profile before you fix</strong>. missingno turns a wall of NaNs into three pictures that tell you what to do.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A missingno-style missingness matrix: present values as filled blocks, missing values as white gaps, with the salary columns mostly white">
+        <style>
+          .msnH { font: 600 12px Inter, sans-serif; fill: #14202B; }
+          .msnHm { font: 600 12px Inter, sans-serif; fill: #E6A700; }
+          .msnL { font: 400 11.5px Inter, sans-serif; fill: #5A6B78; }
+          .msnT { font: 700 13px Inter, sans-serif; fill: #14202B; }
+          .msnN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <text class="msnT" x="40" y="28">Missingness matrix - each column is a field, each row a posting</text>
+        <!-- column headers -->
+        <text class="msnH" x="70" y="58">job_id</text>
+        <text class="msnH" x="175" y="58">title</text>
+        <text class="msnH" x="285" y="58">company</text>
+        <text class="msnH" x="405" y="58">location</text>
+        <text class="msnHm" x="525" y="58">min_sal</text>
+        <text class="msnHm" x="640" y="58">max_sal</text>
+        <text class="msnH" x="755" y="58">posted</text>
+        <!-- column 1: job_id - full -->
+        <rect x="60" y="70" width="80" height="230" fill="#3776AB"/>
+        <!-- column 2: title - full -->
+        <rect x="170" y="70" width="80" height="230" fill="#3776AB"/>
+        <!-- column 3: company - a few gaps -->
+        <rect x="280" y="70" width="80" height="230" fill="#3776AB"/>
+        <rect x="280" y="120" width="80" height="14" fill="#FFFFFF"/>
+        <rect x="280" y="210" width="80" height="14" fill="#FFFFFF"/>
+        <!-- column 4: location - full -->
+        <rect x="390" y="70" width="80" height="230" fill="#3776AB"/>
+        <!-- column 5: min_sal - mostly white -->
+        <rect x="500" y="70" width="80" height="230" fill="#EAF1F7"/>
+        <rect x="500" y="82" width="80" height="14" fill="#4B8BBE"/>
+        <rect x="500" y="140" width="80" height="14" fill="#4B8BBE"/>
+        <rect x="500" y="250" width="80" height="14" fill="#4B8BBE"/>
+        <!-- column 6: max_sal - mostly white, same rows -->
+        <rect x="610" y="70" width="80" height="230" fill="#EAF1F7"/>
+        <rect x="610" y="82" width="80" height="14" fill="#4B8BBE"/>
+        <rect x="610" y="140" width="80" height="14" fill="#4B8BBE"/>
+        <rect x="610" y="250" width="80" height="14" fill="#4B8BBE"/>
+        <!-- column 7: posted - full -->
+        <rect x="720" y="70" width="80" height="230" fill="#3776AB"/>
+        <text class="msnL" x="500" y="318">~70% white = missing</text>
+        <text class="msnL" x="60" y="318">solid = value present</text>
+        <rect x="40" y="322" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="msnN" x="62" y="334">The salary columns go white together - and that pattern decides your whole strategy.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a missingno matrix: solid blocks are present values, white gaps are missing, and the salary columns are mostly white</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The three missingno plots<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>missingno gives you three complementary views. You run all three in about ten seconds and they answer different questions:</p>
+        <ul>
+          <li><strong><code>msno.matrix(df)</code></strong> - the row-by-row view above. White streaks show <em>where</em> gaps fall. If missingness clusters in blocks, something structural is going on; if it's random static, that's a different story.</li>
+          <li><strong><code>msno.bar(df)</code></strong> - one bar per column showing the count of present values. The fastest way to rank columns from cleanest to worst.</li>
+          <li><strong><code>msno.heatmap(df)</code></strong> - the nullity correlation: which columns tend to go missing <em>together</em>. A value near +1 means "when this one is missing, that one usually is too."</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Run these on the LinkedIn postings frame and the ~70% missing salary is visible instantly - the bar for <code>min_salary</code> and <code>max_salary</code> is a stub next to the full-height <code>title</code> bar. The heatmap then shows <code>min_salary</code> and <code>max_salary</code> go missing together at nearly +1: when a poster omits pay, they omit all of it. That single fact shapes every salary decision you make today.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Quantify what you saw<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Pictures point you at the problem; a number lets you decide. Pair the plots with one line:</p>
+        <div class="prompt-box good"><span class="label">★ Missing % per column, worst first</span>jobs.isna().mean().sort_values(ascending=False).head(10)
+# multiply by 100 in your head - .70 means 70% missing</div>
+        <div class="callout tip">
+          <strong>Look, then decide - never the reverse</strong>
+          The most common beginner mistake is reaching for <code>fillna</code> or <code>dropna</code> before seeing the pattern. A column that's 2% missing at random and a column that's 70% missing structurally need opposite treatments. The plot tells you which one you're holding.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: HANDLING MISSING ============ -->
+  <section class="section" id="handling-missing">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers isna/notna, dropna, fillna</span>
+      <h2>Handling missing values <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">There is no default answer to a missing value. There's a decision, and it depends on <em>how much</em> is missing and <em>why</em>. Here's the framework analysts actually use.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision guide for missing values: how much is missing crossed with whether it is random, leading to drop rows, drop column, impute, or leave and flag">
+        <style>
+          .misT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .misS { font: 400 11.5px Inter, sans-serif; fill: #FFFFFF; opacity: .92; }
+          .misH { font: 600 12px Inter, sans-serif; fill: #14202B; }
+          .misX { font: 400 11.5px Inter, sans-serif; fill: #5A6B78; }
+          .misN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <!-- axis labels -->
+        <text class="misH" x="40" y="40">A little missing (&lt; ~5%)</text>
+        <text class="misH" x="480" y="40">A lot missing (&gt; ~50%)</text>
+        <text class="misX" x="40" y="60">how much is gone -&gt;</text>
+        <!-- top-left: little + random -> drop rows -->
+        <rect x="40" y="80" width="380" height="90" rx="10" fill="#3776AB"/>
+        <text class="misT" x="60" y="112">Drop the rows</text>
+        <text class="misS" x="60" y="134">dropna(subset=[col]) - a few gaps,</text>
+        <text class="misS" x="60" y="152">random, safe to lose</text>
+        <!-- top-right: lot + not needed -> drop column -->
+        <rect x="460" y="80" width="380" height="90" rx="10" fill="#1E4A73"/>
+        <text class="misT" x="480" y="112">Drop the column</text>
+        <text class="misS" x="480" y="134">mostly empty and not central</text>
+        <text class="misS" x="480" y="152">to the question - let it go</text>
+        <!-- bottom-left: little/moderate + useful -> impute -->
+        <rect x="40" y="190" width="380" height="90" rx="10" fill="#4B8BBE"/>
+        <text class="misT" x="60" y="222">Impute (carefully)</text>
+        <text class="misS" x="60" y="244">fillna(median) for skewed numbers,</text>
+        <text class="misS" x="60" y="262">mode for categories - and note it</text>
+        <!-- bottom-right: lot + central -> leave + flag -->
+        <rect x="460" y="190" width="380" height="90" rx="10" fill="#E6A700"/>
+        <text class="misT" x="480" y="222" style="fill:#14202B">Leave it + flag it</text>
+        <text class="misS" x="480" y="244" style="fill:#14202B">analyze the subset that has it,</text>
+        <text class="misS" x="480" y="262" style="fill:#14202B">say so out loud - the salary case</text>
+        <rect x="40" y="300" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="misN" x="62" y="312">Missing at random? How much? Those two questions pick the box - never blanket-fill.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the drop-vs-impute-vs-flag decision, driven by how much is missing and why</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The four tools and when to reach for each<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong><code>isna()</code> / <code>notna()</code></strong> - boolean masks. <code>df["col"].isna().sum()</code> counts gaps; <code>df[df["col"].notna()]</code> keeps only the rows that have a value (the "salaried subset" move).</li>
+          <li><strong><code>dropna()</code></strong> - remove gaps. <code>how="any"</code> vs <code>how="all"</code>, <code>thresh=N</code> to require N non-nulls, and <code>subset=[...]</code> to only judge specific columns. Dropping on the whole frame is usually too aggressive - scope it with <code>subset</code>.</li>
+          <li><strong><code>fillna()</code></strong> - fill gaps with a value: a median, a mode, or a sentinel like <code>"Unknown"</code>. Powerful and dangerous.</li>
+          <li><strong>Mean vs median</strong> - salary is right-skewed (a few huge numbers pull the mean up). For skewed data, <strong>median</strong> is the honest center. Reach for mean only on roughly symmetric data.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Never blanket-fill without thinking</strong>
+          <code>df.fillna(0)</code> across a whole frame is a classic disaster - it silently turns "we don't know this salary" into "this job pays $0," and every average you compute afterward is wrong. Fill a column at a time, with a reason.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Our salary strategy, decided out loud<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Applying the framework to the LinkedIn salary columns:</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Salary is ~70% missing and it's the most interesting variable in the dataset - so it lands in the bottom-right box. We do <strong>not</strong> impute it: filling 70% of rows with one median would fabricate the majority of the data and bias every finding toward that single number. Instead we <strong>keep every row</strong>, build a clean <code>salary_year</code> where it exists, and analyze the ~30% salaried subset for pay questions - while saying clearly in the report that pay figures describe postings that disclosed salary. Honest, and still useful.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: TYPES + TEXT + DUPES ============ -->
+  <section class="section" id="types-text-dupes">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers dtype coercion, .str methods, duplicates</span>
+      <h2>Fixing types, text, and dupes <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">With missingness handled, three mechanical clean-ups remain: get the dtypes right, tidy the free-text fields, and drop duplicate postings. These are the moves that turn a frame from "loads without error" into "safe to compute on."</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Coerce the dtypes<span class="mini">1.5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A number stored as text won't add up; a date stored as text won't sort. Three workhorses fix this:</p>
+        <ul>
+          <li><strong><code>astype()</code></strong> - direct conversion when you know the data is clean: <code>df["views"].astype("int64")</code>.</li>
+          <li><strong><code>pd.to_numeric(s, errors="coerce")</code></strong> - convert to number, and turn anything unparseable into <code>NaN</code> instead of crashing. Essential for messy salary text.</li>
+          <li><strong><code>pd.to_datetime(s)</code></strong> - parse the <code>posted</code> column into real timestamps so you can sort and resample later.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>errors="coerce" is your seatbelt</strong>
+          Without it, one stray value like <code>"competitive"</code> in a salary column throws and stops your whole notebook. With it, that value becomes NaN, the conversion finishes, and you decide what to do with the gaps deliberately.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Tame the free-text with .str<span class="mini">1.5 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Job titles are gloriously inconsistent: <code>"Data Analyst"</code>, <code>" data analyst "</code>, <code>"DATA ANALYST II"</code>. The <code>.str</code> accessor cleans a whole column at once:</p>
+        <ul>
+          <li><code>.str.strip()</code> - kill leading/trailing whitespace.</li>
+          <li><code>.str.lower()</code> - normalize case so grouping works.</li>
+          <li><code>.str.contains("analyst")</code> - boolean filter for title bucketing.</li>
+          <li><code>.str.replace(...)</code> and <code>.str.extract(r"...")</code> - swap noise out, pull structured bits (like a level number) out with a regex.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Parse salary to a yearly number<span class="mini">1 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The core project transform. Salary lives across <code>min_salary</code>, <code>max_salary</code>, and <code>pay_period</code> (HOURLY / MONTHLY / YEARLY). We coerce the numbers, take the midpoint, then scale by period to a single annual figure:</p>
+        <div class="prompt-box good"><span class="label">★ The salary-to-yearly logic</span># coerce both to numeric (bad values -&gt; NaN)
+lo = pd.to_numeric(jobs["min_salary"], errors="coerce")
+hi = pd.to_numeric(jobs["max_salary"], errors="coerce")
+
+mid = (lo + hi) / 2          # midpoint of the posted band
+
+# normalize to yearly: hourly * ~2080 work-hours, monthly * 12
+factor = jobs["pay_period"].map({"HOURLY": 2080, "MONTHLY": 12, "YEARLY": 1})
+jobs["salary_year"] = mid * factor</div>
+        <p>Rows with no salary stay <code>NaN</code> - exactly what we want. We're building the column, not filling the gaps.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Find and drop duplicates<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Scrapes double-post. <code>df.duplicated().sum()</code> counts exact duplicate rows; <code>df.duplicated(subset=["job_id"]).sum()</code> counts repeats of a business key. <code>df.drop_duplicates(subset=["job_id"])</code> keeps the first of each. Always check the shape before and after so you know how many you removed - a silent 10% drop is worth noticing.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>See the mess with missingno <span class="tag demo">★ 8 min · everyone profiles</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Reload the postings frame from Session 1 into <code>jobs</code>. We profile before we touch anything.</p></div>
+      <div class="step"><p>Run all three missingno plots and read them out loud together.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ The three-view missingness check</span>import missingno as msno
+import matplotlib.pyplot as plt
+
+msno.matrix(jobs)      # row-by-row: where do gaps fall?
+plt.show()
+
+msno.bar(jobs)         # count per column: rank cleanest to worst
+plt.show()
+
+msno.heatmap(jobs)     # nullity correlation: what goes missing together?
+plt.show()</div>
+    <div class="steps">
+      <div class="step"><p>Write down the <strong>three worst columns</strong> by missing %. Confirm with <code>jobs.isna().mean().sort_values(ascending=False).head(5)</code>.</p></div>
+    </div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>Your three worst columns will almost certainly be the salary trio. The heatmap makes the story concrete: <code>min_salary</code> and <code>max_salary</code> light up together near +1. You now know that "handle missing salary" is one decision, not two - and Demo 2 acts on it.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>Build the clean salary column <span class="tag demo">★ 9 min · everyone builds</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Coerce both salary bounds to numeric so stray text becomes NaN instead of crashing.</p></div>
+      <div class="step"><p>Combine min and max into a midpoint, then normalize the pay period to an annual figure.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ min/max/period -&gt; one yearly number</span>lo = pd.to_numeric(jobs["min_salary"], errors="coerce")
+hi = pd.to_numeric(jobs["max_salary"], errors="coerce")
+
+# if only one bound exists, midpoint still works via NaN-aware mean
+mid = pd.concat([lo, hi], axis=1).mean(axis=1)
+
+factor = jobs["pay_period"].map({"HOURLY": 2080, "MONTHLY": 12, "YEARLY": 1})
+jobs["salary_year"] = mid * factor
+
+jobs["salary_year"].describe()   # sanity-check the range - any $2M outliers?</div>
+    <div class="steps">
+      <div class="step"><p><strong>Decide the missing strategy out loud:</strong> keep every row, do not impute the ~70% gap, plan to analyze the salaried subset with <code>jobs[jobs["salary_year"].notna()]</code> in Session 5.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Sanity-check every derived column</strong>
+      After any transform, run <code>.describe()</code>. If the max salary reads $5,000,000 you probably have an hourly rate that wasn't scaled, or a typo row. Catch it now, before it becomes a headline.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Tidy titles, dedupe, save clean <span class="tag demo">★ 5 min · follow along</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Normalize the title text so grouping works next week.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Clean text, dedupe, confirm the drop</span># tidy titles
+jobs["title"] = jobs["title"].str.strip().str.lower()
+
+# drop duplicate postings on the business key
+before = jobs.shape[0]
+jobs = jobs.drop_duplicates(subset=["job_id"])
+print("removed", before - jobs.shape[0], "duplicate postings")</div>
+    <div class="steps">
+      <div class="step"><p>Save to a <strong>new</strong> file - never overwrite the raw download.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Save the cleaned frame (raw stays untouched)</span>jobs.to_csv("postings_clean.csv", index=False)
+# Session 5 loads THIS file, not the raw one</div>
+    <div class="callout tip">
+      <strong>Raw is sacred</strong>
+      Your cleaned file is a rebuildable artifact - if you make a mistake you re-run the notebook. The raw <code>postings.csv</code> is your one source of truth; keep it read-only in your head. Every save this course does uses a new name.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 40 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Kaggle Pandas Lesson 5</strong> - Data Types &amp; Missing Values. Short, and the exercises drill exactly today's moves.</li>
+      <li><strong>Fully clean your frame</strong> - build <code>salary_year</code>, tidy titles, drop duplicates on <code>job_id</code>, and save it as <code>postings_clean.csv</code>. Session 5 loads this file, so this is not optional.</li>
+      <li><strong>Write your cleaning log</strong> - one markdown cell listing what you dropped, what you left missing, and why. This becomes a paragraph in your Session 8 report.</li>
+      <li><strong>Read McKinney ch7</strong> - Data Cleaning and Preparation. It's the canonical reference for everything today.</li>
+      <li><strong>Optional:</strong> run a sweetviz report comparing the raw frame to your cleaned frame - a satisfying before/after that shows what your work changed.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Why run missingno before you start dropping or filling?</p>
+      <button class="qopt" type="button">A · It's required before pandas will let you use fillna</button>
+      <button class="qopt" type="button">B · To SEE the pattern of missingness and decide drop vs impute deliberately, not blindly</button>
+      <button class="qopt" type="button">C · It automatically cleans the data for you</button>
+      <p class="qwhy">A 2%-random gap and a 70%-structural gap need opposite treatments. The plots tell you which one you're holding - profile before you fix.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · What does <code>pd.to_numeric(s, errors="coerce")</code> do?</p>
+      <button class="qopt" type="button">A · Deletes every non-numeric row from the frame</button>
+      <button class="qopt" type="button">B · Rounds the numbers to the nearest integer</button>
+      <button class="qopt" type="button">C · Converts to a number, turning unparseable values into NaN instead of crashing</button>
+      <p class="qwhy">It's your seatbelt: one stray "competitive" in a salary column becomes NaN and the conversion finishes, instead of throwing and stopping the notebook.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · Why NOT impute the ~70% missing salary with the mean?</p>
+      <button class="qopt" type="button">A · You'd fabricate data for most rows and bias every result - better to analyze the salaried subset and say so</button>
+      <button class="qopt" type="button">B · The mean is impossible to compute on a column with any NaNs</button>
+      <button class="qopt" type="button">C · pandas forbids imputing more than 50% of a column</button>
+      <p class="qwhy">Filling 70% of rows with one number invents the majority of your data. Keep the rows, analyze the ~30% that disclosed pay, and state that clearly in the report.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ OFFICIAL SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the working content of the pandas missing-data and text guides, the free Kaggle Pandas micro-course, Wes McKinney's open-access <a href="https://wesmckinney.com/book/">Python for Data Analysis (3e)</a>, and the missingno and ydata-profiling docs. Certificates and graded exercises stay on those platforms - links provided.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Kaggle Pandas L5 - Data Types &amp; Missing Values</span><span class="note">dtype, isna, fillna, dropna - Parts 2-3 + Demos</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">pandas guides - Missing data + Working with text</span><span class="note">NaN semantics, .str accessor, coercion - Parts 2-3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">McKinney ch7 - Data Cleaning and Preparation</span><span class="note">missing values, transforms, string ops - whole session</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">missingno docs - matrix / bar / heatmap</span><span class="note">seeing missingness before fixing - Part 1 + Demo 1</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">pandas Categorical dtype</span><span class="note">introduced in passing; memory + grouping payoff in Session 5</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 4 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>See it first</b><span>msno.matrix(df) for row gaps · msno.bar(df) to rank columns · msno.heatmap(df) for what goes missing together.</span></div>
+      <div class="cheat-item"><b>Quantify</b><span>df.isna().mean().sort_values(ascending=False) - % missing per column, worst first.</span></div>
+      <div class="cheat-item"><b>Drop vs fill</b><span>dropna(subset=[...], thresh=N) to remove · fillna(median/mode/sentinel) to fill · never blanket-fill a whole frame.</span></div>
+      <div class="cheat-item"><b>Coerce types</b><span>pd.to_numeric(s, errors="coerce") · pd.to_datetime(s) · astype() when clean. errors="coerce" turns junk into NaN.</span></div>
+      <div class="cheat-item"><b>Clean text</b><span>s.str.strip().str.lower() · .str.contains(...) · .str.replace(...) · .str.extract(r"...") for structured bits.</span></div>
+      <div class="cheat-item"><b>Dedupe + save</b><span>df.drop_duplicates(subset=["job_id"]); then df.to_csv("postings_clean.csv", index=False) - a NEW file, raw untouched.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 4 of 8 · learn-python-data-analysis-with-phoebe · by Phoebe Fu</span>
+    <span><a href="03-pandas-core.html">← Prev: pandas core</a> &nbsp;·&nbsp; <a href="05-explore-and-aggregate.html">Next: Explore and aggregate →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 6 · Matplotlib fundamentals - learn python data analysis with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-python-data-analysis-with-phoebe</a> / Session 6 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Python Data Analysis with Phoebe · Session 6 of 8</div>
+    <h1>Matplotlib <span class="accent">fundamentals</span></h1>
+    <p class="sub">You've cleaned the frame and grouped it into answers. Now you make it visible. Matplotlib is the engine under every Python chart - seaborn and pandas .plot both sit on it - so we learn its anatomy once, properly. By the end you'll hand-build a line, bar, histogram, and scatter of the real job market, fully labeled and saved at publication quality.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Moderate</span>
+      <span class="chip audience">Builders</span>
+      <span class="chip audience">Figure and Axes</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Build-along demos</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>A chart is an argument</h2>
+    </div>
+    <p class="lede">A chart isn't decoration - it's an argument made with ink. "Data roles pay more with seniority." "Postings peaked in spring." A good chart makes that claim in a second and lets the reader check it. The tool that draws it in Python is <strong>matplotlib</strong>, and here's the thing most people never learn: it's the engine under everything. seaborn calls it. pandas <code>.plot()</code> calls it. Every chart you've ever seen in a Python notebook came out of matplotlib. Learn its anatomy once and every other plotting library becomes a shortcut you understand, not magic you fear.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">The project: the data job market</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      Four hand-built charts of your clean job-market frame - a bar of the top roles, a histogram of salaries, a location bar and a salary distribution side by side - each with a title, axis labels with units, and saved as a 300 dpi PNG for slides plus an SVG that stays sharp anywhere. Real charts you could drop into the Session 8 report.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: FIGURE/AXES ANATOMY ============ -->
+  <section class="section" id="anatomy">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the pyplot vs object-oriented interface</span>
+      <h2>The Figure and Axes anatomy <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">The #1 matplotlib confusion is that there are two ways to draw the same chart. Clear it up now and the docs stop feeling contradictory.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anatomy of a matplotlib Figure containing an Axes with title, axis labels, ticks, legend, and spines labeled">
+        <style>
+          .anaFig { font: 700 13px Inter, sans-serif; fill: #14202B; }
+          .anaAx  { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .anaLbl { font: 600 12px Inter, sans-serif; fill: #1E4A73; }
+          .anaMut { font: 400 11.5px Inter, sans-serif; fill: #5A6B78; }
+          .anaN   { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+          .anaLead { stroke: #B8C4CE; stroke-width: 1.5; fill: none; marker-end: url(#anaArr); }
+          .anaSpine { stroke: #1E4A73; stroke-width: 2; fill: none; }
+        </style>
+        <defs>
+          <marker id="anaArr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#B8C4CE" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <!-- Figure canvas -->
+        <rect x="250" y="40" width="420" height="300" rx="10" fill="#EAF1F7" stroke="#3776AB" stroke-width="1.5"/>
+        <text class="anaFig" x="262" y="60">Figure (the whole canvas)</text>
+        <!-- Axes (the plot area) -->
+        <rect x="330" y="95" width="290" height="200" rx="6" fill="#3776AB"/>
+        <text class="anaAx" x="345" y="115">Axes (one plot)</text>
+        <!-- title -->
+        <text class="anaAx" x="345" y="135" style="font-size:11px;opacity:.9">Postings by role</text>
+        <!-- fake bars -->
+        <rect x="360" y="240" width="26" height="40" fill="#8FB8D6"/>
+        <rect x="400" y="210" width="26" height="70" fill="#8FB8D6"/>
+        <rect x="440" y="180" width="26" height="100" fill="#8FB8D6"/>
+        <rect x="480" y="220" width="26" height="60" fill="#8FB8D6"/>
+        <rect x="520" y="250" width="26" height="30" fill="#8FB8D6"/>
+        <!-- spines -->
+        <path class="anaSpine" d="M345 150 L345 285 L610 285"/>
+        <!-- ticks -->
+        <line x1="345" y1="285" x2="345" y2="291" stroke="#FFFFFF" stroke-width="1.5"/>
+        <line x1="410" y1="285" x2="410" y2="291" stroke="#FFFFFF" stroke-width="1.5"/>
+        <line x1="475" y1="285" x2="475" y2="291" stroke="#FFFFFF" stroke-width="1.5"/>
+        <line x1="540" y1="285" x2="540" y2="291" stroke="#FFFFFF" stroke-width="1.5"/>
+        <!-- legend chip inside axes -->
+        <rect x="548" y="150" width="60" height="20" rx="4" fill="#EAF1F7"/>
+        <text class="anaMut" x="556" y="164" style="fill:#14202B">legend</text>
+        <!-- Labels with lead lines -->
+        <text class="anaLbl" x="20" y="128">Title</text>
+        <line class="anaLead" x1="70" y1="124" x2="340" y2="131"/>
+        <text class="anaLbl" x="20" y="168">Legend</text>
+        <line class="anaLead" x1="80" y1="164" x2="546" y2="160"/>
+        <text class="anaLbl" x="20" y="215">y Axis + ylabel</text>
+        <text class="anaMut" x="20" y="231">(count, units)</text>
+        <line class="anaLead" x1="130" y1="211" x2="343" y2="220"/>
+        <text class="anaLbl" x="20" y="285">Spines</text>
+        <text class="anaMut" x="20" y="301">(the frame)</text>
+        <line class="anaLead" x1="75" y1="281" x2="343" y2="270"/>
+        <text class="anaLbl" x="640" y="330">x Axis + xlabel</text>
+        <text class="anaMut" x="640" y="346">(role, ticks)</text>
+        <line class="anaLead" x1="700" y1="316" x2="500" y2="298"/>
+        <!-- note square -->
+        <rect x="20" y="388" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="anaN" x="42" y="400">One Figure holds one or more Axes; every label you add hangs off an Axes.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a Figure is the canvas; an Axes is one plot with its title, x/y labels, ticks, legend, and spines</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Two interfaces, one picture<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Matplotlib gives you two ways in, and mixing them is where beginners get lost:</p>
+        <ul>
+          <li><strong>pyplot (stateful)</strong> - <code>plt.plot(...)</code>, <code>plt.title(...)</code>. There's a hidden "current" figure and every command draws onto it. Quick for a one-off throwaway chart, clumsy the moment you want two plots.</li>
+          <li><strong>Object-oriented (explicit)</strong> - <code>fig, ax = plt.subplots()</code> hands you the Figure and the Axes as real objects. You call <code>ax.bar(...)</code>, <code>ax.set_title(...)</code> on the exact plot you mean. This is what pros use and what every serious codebase looks like.</li>
+        </ul>
+        <p>The anatomy above is the whole vocabulary: a <strong>Figure</strong> is the canvas, an <strong>Axes</strong> is a single plot living on it (confusingly not the same as an "axis" - an Axes has an x <em>axis</em> and a y <em>axis</em>), and everything you label - title, ticks, legend, spines - hangs off that Axes.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Always use fig, ax = plt.subplots()<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ The one pattern to internalize</span>import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(8, 5))   # Figure + one Axes, explicitly
+ax.bar(roles, counts)                     # draw on THIS axes
+ax.set_title("Top data roles by postings")
+ax.set_xlabel("role")
+ax.set_ylabel("number of postings")
+fig.tight_layout()</div>
+        <p>Why prefer this over <code>plt.bar(...)</code>? Because the moment you want a second plot, a shared legend, or small multiples, the object-oriented style just works - <code>fig, (ax1, ax2) = plt.subplots(1, 2)</code> and you have two named axes. The stateful version leaves you guessing which "current" figure a command lands on. Learn the explicit pattern first and you never unlearn a bad habit.</p>
+        <div class="callout tip">
+          <strong>fig vs ax - who does what</strong>
+          The <code>fig</code> owns figure-wide things (size, saving, tight_layout). The <code>ax</code> owns the plot itself (the marks, title, labels, legend). When you're not sure where a method lives, ask: "is this about the whole canvas, or this one plot?"
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: FOUR CHARTS ============ -->
+  <section class="section" id="four-charts">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the core plot types</span>
+      <h2>The four charts you need <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">You don't need thirty chart types. You need four, and the skill is matching each to the question it answers. Pick the wrong one and a true dataset tells a confusing story.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four chart types in a two by two grid: line for trend, bar for categories, histogram for distribution, scatter for relationship">
+        <style>
+          .fcT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .fcU { font: 400 11.5px Inter, sans-serif; fill: #FFFFFF; opacity: .92; }
+          .fcM { stroke: #FFFFFF; stroke-width: 2.5; fill: none; }
+          .fcN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <!-- line -->
+        <rect x="20" y="20" width="410" height="135" rx="10" fill="#1E4A73"/>
+        <text class="fcT" x="38" y="46">Line - trend over time</text>
+        <text class="fcU" x="38" y="64">use for: postings per month</text>
+        <polyline class="fcM" points="240,130 275,110 310,118 345,88 380,96 410,70"/>
+        <!-- bar -->
+        <rect x="450" y="20" width="410" height="135" rx="10" fill="#3776AB"/>
+        <text class="fcT" x="468" y="46">Bar - compare categories</text>
+        <text class="fcU" x="468" y="64">use for: postings by role</text>
+        <rect x="690" y="100" width="20" height="35" fill="#FFFFFF"/>
+        <rect x="720" y="82" width="20" height="53" fill="#FFFFFF"/>
+        <rect x="750" y="66" width="20" height="69" fill="#FFFFFF"/>
+        <rect x="780" y="92" width="20" height="43" fill="#FFFFFF"/>
+        <rect x="810" y="112" width="20" height="23" fill="#FFFFFF"/>
+        <!-- histogram -->
+        <rect x="20" y="170" width="410" height="135" rx="10" fill="#4B8BBE"/>
+        <text class="fcT" x="38" y="196">Histogram - one distribution</text>
+        <text class="fcU" x="38" y="214">use for: salary_year spread</text>
+        <rect x="250" y="270" width="24" height="15" fill="#FFFFFF"/>
+        <rect x="276" y="252" width="24" height="33" fill="#FFFFFF"/>
+        <rect x="302" y="235" width="24" height="50" fill="#FFFFFF"/>
+        <rect x="328" y="248" width="24" height="37" fill="#FFFFFF"/>
+        <rect x="354" y="262" width="24" height="23" fill="#FFFFFF"/>
+        <rect x="380" y="274" width="24" height="11" fill="#FFFFFF"/>
+        <!-- scatter -->
+        <rect x="450" y="170" width="410" height="135" rx="10" fill="#8FB8D6"/>
+        <text class="fcT" x="468" y="196" style="fill:#14202B">Scatter - relationship</text>
+        <text class="fcU" x="468" y="214" style="fill:#14202B">use for: salary vs company size</text>
+        <circle cx="690" cy="275" r="4" fill="#1E4A73"/>
+        <circle cx="715" cy="262" r="4" fill="#1E4A73"/>
+        <circle cx="740" cy="250" r="4" fill="#1E4A73"/>
+        <circle cx="760" cy="255" r="4" fill="#1E4A73"/>
+        <circle cx="785" cy="238" r="4" fill="#1E4A73"/>
+        <circle cx="810" cy="245" r="4" fill="#1E4A73"/>
+        <circle cx="835" cy="230" r="4" fill="#1E4A73"/>
+        <!-- note square -->
+        <rect x="20" y="316" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="fcN" x="42" y="328">Match the chart to the question first; the code is the easy part.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - four charts, four questions: trend, comparison, distribution, relationship</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Which chart answers which question<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th>Chart</th><th>Question it answers</th><th>On our data</th></tr></thead>
+          <tbody>
+            <tr><td>Line</td><td>How does one number change over time?</td><td>postings per month across 2023-2024</td></tr>
+            <tr><td>Bar</td><td>How do categories compare?</td><td>postings by role, or by location</td></tr>
+            <tr><td>Histogram</td><td>How is one numeric column distributed?</td><td>the spread of salary_year</td></tr>
+            <tr><td>Scatter</td><td>Do two numbers move together?</td><td>salary_year vs company size</td></tr>
+          </tbody>
+        </table>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A common mistake: using a bar chart for salary spread. A bar of "average salary by role" hides that half the postings for a role pay wildly more or less than that average. Ask "distribution?" and reach for a histogram - it's the difference between a headline that's true and one that's technically-an-average.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The method names on an Axes<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><code>ax.plot(x, y)</code> - line</li>
+          <li><code>ax.bar(categories, heights)</code> - vertical bars (<code>ax.barh</code> for horizontal, better for long role names)</li>
+          <li><code>ax.hist(values, bins=30)</code> - histogram</li>
+          <li><code>ax.scatter(x, y)</code> - scatter</li>
+        </ul>
+        <p>Same four verbs, same object. Once <code>fig, ax = plt.subplots()</code> is muscle memory, switching chart types is just switching the method you call on <code>ax</code>.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: LABELS, STYLES, SUBPLOTS, SAVING ============ -->
+  <section class="section" id="polish">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers labels, subplots, and saving</span>
+      <h2>Labels, styles, subplots, saving <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">A chart without labels is a puzzle. Here's the small set of methods that turn a raw plot into something you'd publish - and how to save it right.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Label it, size it, save it<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ The publish-ready pattern</span>fig, ax = plt.subplots(figsize=(9, 5))     # width, height in inches
+ax.bar(roles, counts, color="#3776AB")
+ax.set_title("Top 10 data roles by postings")
+ax.set_xlabel("role")
+ax.set_ylabel("number of postings")
+ax.legend(["2023-2024 postings"])           # only if you have series to name
+fig.tight_layout()                          # stop labels getting clipped
+
+fig.savefig("roles.png", dpi=300, bbox_inches="tight")   # 300 dpi = print quality
+fig.savefig("roles.svg", bbox_inches="tight")            # vector - sharp at any size</div>
+        <p>For more than one plot, <code>fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 5))</code> gives you a grid of Axes - "small multiples" that let a reader compare panels side by side. Always finish with <code>tight_layout()</code> so nothing overlaps.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Why PNG and SVG, and why 300 dpi<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>PNG at dpi=300</strong> is print / publication quality - crisp in slides and on LinkedIn, not the blurry 72-dpi screenshot look.</li>
+          <li><strong>SVG</strong> is a vector: it stays razor-sharp at any zoom because it stores shapes, not pixels. Perfect when someone blows your chart up on a projector.</li>
+          <li>Saving <em>both</em> is the workspace convention - PNG for the quick paste, SVG for anything that might get resized or printed.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>An unlabeled chart is a lie by omission. A bar climbing from 3 to 5 means nothing until the y axis says "salary in thousands USD" or "postings per month". Every axis gets units before the chart leaves your notebook - that one habit separates a screenshot from a finding people trust.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>A labeled bar of the top roles <span class="tag demo">★ 8 min · everyone codes</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>From your clean frame, count postings per job title and keep the top 10.</p></div>
+      <div class="step"><p>Build the figure explicitly, draw the bars, rotate the labels so long titles don't collide.</p></div>
+      <div class="step"><p>Title it, label both axes, then save a 300 dpi PNG.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Top 10 roles, bar chart</span>import matplotlib.pyplot as plt
+
+top = jobs["title_clean"].value_counts().head(10)   # from the clean frame
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.bar(top.index, top.values, color="#3776AB")
+ax.set_title("Top 10 data roles by number of postings")
+ax.set_xlabel("role")
+ax.set_ylabel("number of postings")
+ax.tick_params(axis="x", rotation=45)               # rotate crowded labels
+plt.setp(ax.get_xticklabels(), ha="right")          # anchor them neatly
+fig.tight_layout()
+
+fig.savefig("top-roles.png", dpi=300, bbox_inches="tight")</div>
+    <div class="callout tip">
+      <strong>Long labels colliding?</strong>
+      Rotate to 45 with <code>ha="right"</code>, or flip to a horizontal bar with <code>ax.barh(top.index[::-1], top.values[::-1])</code> - reversed so the biggest bar sits on top. For role names, horizontal usually reads better.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>A salary histogram with a median line <span class="tag demo">★ 8 min · everyone codes</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Take the salaried subset (the ~30% of postings with a real salary_year) and draw its distribution.</p></div>
+      <div class="step"><p>Choose a sensible bin count, then drop a vertical line at the median with <code>axvline</code> to anchor the eye.</p></div>
+      <div class="step"><p>Read the shape out loud: is it symmetric, or does a long right tail pull the mean above the median?</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Distribution of salary_year</span>salaried = jobs.dropna(subset=["salary_year"])
+median = salaried["salary_year"].median()
+
+fig, ax = plt.subplots(figsize=(9, 5))
+ax.hist(salaried["salary_year"], bins=40, color="#4B8BBE", edgecolor="white")
+ax.axvline(median, color="#E6A700", linewidth=2,
+           label=f"median = ${median:,.0f}")
+ax.set_title("Distribution of advertised yearly salary")
+ax.set_xlabel("salary_year (USD)")
+ax.set_ylabel("number of postings")
+ax.legend()
+fig.tight_layout()
+
+fig.savefig("salary-hist.png", dpi=300, bbox_inches="tight")</div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>Salary data is almost always right-skewed - a long tail of a few very high offers drags the mean well above the typical role. The histogram makes that visible, and the median line shows where most people actually land. This is exactly the chart that keeps your Session 8 report from claiming a misleadingly high "average" salary.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Two panels side by side <span class="tag demo">★ 6 min · everyone codes</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Make a 1x2 grid: postings by location on the left, the salary distribution on the right.</p></div>
+      <div class="step"><p>Each panel is its own Axes - draw on <code>ax1</code> and <code>ax2</code> independently.</p></div>
+      <div class="step"><p>tight_layout, then save both a PNG and an SVG for the report.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ 1x2 small multiples</span>top_loc = jobs["location_state"].value_counts().head(8)
+
+fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(13, 5))
+
+# left panel - postings by location
+ax1.barh(top_loc.index[::-1], top_loc.values[::-1], color="#3776AB")
+ax1.set_title("Postings by location (top 8 states)")
+ax1.set_xlabel("number of postings")
+
+# right panel - salary distribution
+ax2.hist(salaried["salary_year"], bins=40, color="#4B8BBE", edgecolor="white")
+ax2.set_title("Salary distribution")
+ax2.set_xlabel("salary_year (USD)")
+ax2.set_ylabel("number of postings")
+
+fig.tight_layout()
+fig.savefig("market-overview.png", dpi=300, bbox_inches="tight")
+fig.savefig("market-overview.svg", bbox_inches="tight")</div>
+    <div class="callout tip">
+      <strong>subplots returns a grid</strong>
+      With one row and two columns you unpack <code>(ax1, ax2)</code>. For a 2x2 you'd get <code>((ax1, ax2), (ax3, ax4))</code>, or capture the whole thing as <code>axes</code> and index it. Same Figure, many Axes - that's all small multiples are.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Read the matplotlib pyplot tutorial</strong> once, top to bottom. You've seen the object-oriented style live - now see how the docs frame both interfaces.</li>
+      <li><strong>Rebuild each demo chart on YOUR data</strong> - the bar, the histogram with a median line, and the 1x2 panel - and save each as a PNG. Get the fig, ax pattern into your fingers.</li>
+      <li><strong>Read McKinney chapter 9</strong> (Plotting and Visualization) - it's the same anatomy from a second angle, and it locks it in.</li>
+      <li><strong>Make one chart you'd actually post.</strong> Pick the single most interesting thing in your frame, chart it, label it honestly, save it at 300 dpi. That's the seed of your Session 8 report.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · Why prefer <code>fig, ax = plt.subplots()</code> over calling <code>plt.plot()</code> directly?</p>
+      <button class="qopt" type="button">A · plt.plot is deprecated and will be removed</button>
+      <button class="qopt" type="button">B · It gives you explicit, object-oriented control over one or more axes - clearer, and what pros use, vs the stateful global pyplot</button>
+      <button class="qopt" type="button">C · It runs noticeably faster</button>
+      <p class="qwhy">The object-oriented style hands you the Figure and Axes as real objects, so multiple plots, shared legends, and small multiples just work. plt.plot draws onto a hidden "current" figure you have to keep track of.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · Which chart shows the distribution of a single numeric column like salary_year?</p>
+      <button class="qopt" type="button">A · A line chart</button>
+      <button class="qopt" type="button">B · A bar chart of the average</button>
+      <button class="qopt" type="button">C · A histogram</button>
+      <p class="qwhy">A histogram bins one numeric column and shows how values spread - skew, clusters, outliers. A bar of the average hides all of that behind a single number.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · Why save with <code>savefig(dpi=300)</code> in both PNG and SVG?</p>
+      <button class="qopt" type="button">A · 300 dpi is print / publication quality; PNG is handy for slides, and SVG stays sharp at any size - the workspace convention</button>
+      <button class="qopt" type="button">B · SVG files are smaller than PNG</button>
+      <button class="qopt" type="button">C · matplotlib can only export those two formats</button>
+      <p class="qwhy">300 dpi keeps the raster crisp in print and slides; SVG is a vector that never blurs when resized. Saving both covers the quick paste and the projector blow-up.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ OFFICIAL SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the working content of the official matplotlib docs and Wes McKinney's open-access <a href="https://wesmckinney.com/book/">Python for Data Analysis (3e)</a>. Interactive galleries and the deep API stay on those platforms - links provided.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">matplotlib pyplot tutorial</span><span class="note">stateful vs object-oriented, plot / bar / hist / scatter - Parts 1-2</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">matplotlib Figure / Axes (Artist) layer</span><span class="note">fig, ax anatomy, set_title / labels / legend, subplots - Parts 1 &amp; 3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">McKinney ch9 - Plotting and Visualization</span><span class="note">figures, subplots, saving, styling - all three demos</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">matplotlib animation + interactive backends</span><span class="note">not covered - static publication charts are the goal here</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 6 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Start every chart</b><span>fig, ax = plt.subplots(figsize=(w, h)) - explicit Figure + Axes, the pattern pros use.</span></div>
+      <div class="cheat-item"><b>Four verbs</b><span>ax.plot (trend) · ax.bar / barh (compare) · ax.hist (distribution) · ax.scatter (relationship).</span></div>
+      <div class="cheat-item"><b>Label everything</b><span>ax.set_title, ax.set_xlabel, ax.set_ylabel, ax.legend - every axis gets units.</span></div>
+      <div class="cheat-item"><b>Small multiples</b><span>plt.subplots(nrows, ncols) -> a grid of axes; draw on each independently.</span></div>
+      <div class="cheat-item"><b>Never clip</b><span>fig.tight_layout() before saving so labels and titles don't get cut off.</span></div>
+      <div class="cheat-item"><b>Save it right</b><span>fig.savefig("c.png", dpi=300) + fig.savefig("c.svg") - PNG for slides, SVG stays sharp.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 6 of 8 · learn-python-data-analysis-with-phoebe · by Phoebe Fu</span>
+    <span><a href="05-explore-and-aggregate.html">← Prev: Explore and aggregate</a> &nbsp;·&nbsp; <a href="07-seaborn-polish.html">Next: Seaborn polish →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

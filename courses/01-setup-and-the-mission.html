@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 1 · Set up and meet the mission - learn python data analysis with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-python-data-analysis-with-phoebe</a> / Session 1 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Python Data Analysis with Phoebe · Session 1 of 8</div>
+    <h1>Set up, and meet <span class="accent">the mission</span></h1>
+    <p class="sub">Get a real data-analysis workspace running - conda, Jupyter, pandas - and load the one dataset you'll carry through all eight sessions: 124,000 real LinkedIn job postings. By Session 8 you turn it into a shareable "state of the data job market" report. Today, you load it and take your first look.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Easiest</span>
+      <span class="chip audience">Builders</span>
+      <span class="chip audience">Knows a little Python</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Set up &amp; first look</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Why this course exists</h2>
+    </div>
+    <p class="lede">Most people learn pandas as a pile of disconnected tricks - a groupby here, a plot there - and never feel like an analyst. This course fixes that with one real, messy dataset and one real question: <strong>what does the data job market actually look like?</strong> You'll load it, clean it, interrogate it, chart it, and by Session 8 ship a report you'd be proud to post. Every method you learn earns its place by moving that project forward. This is the hands-on sequel to <a href="https://phoebefu6.github.io/learn-python-with-phoebe/">learn-python-with-phoebe</a> - if you can write a loop and a function, you're ready.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">The project: the data job market</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      A clean conda environment with the full analysis stack installed, Jupyter running, the 124k-row LinkedIn dataset loaded into a DataFrame, and your first honest look at it - shape, dtypes, and a one-line automated profile that already tells you where the mess is.
+    </div>
+  </section>
+
+  <!-- ============ PART 1: THE STACK ============ -->
+  <section class="section" id="the-stack">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the pandas / NumPy stack intro</span>
+      <h2>The data-analysis stack <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Four libraries do 95% of Python data analysis, and they stack. Understand the stack once and every tutorial you read afterward slots into place.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The analysis stack: NumPy at the base, pandas on top, matplotlib and seaborn for plotting, Jupyter as the workbench">
+        <style>
+          .stkT { font: 700 15px Inter, sans-serif; fill: #FFFFFF; }
+          .stkS { font: 400 12.5px Inter, sans-serif; fill: #FFFFFF; opacity: .9; }
+          .stkI { font: 600 13px Inter, sans-serif; fill: #14202B; }
+          .stkX { font: 400 12.5px Inter, sans-serif; fill: #5A6B78; }
+          .stkN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <rect x="150" y="30" width="580" height="46" rx="10" fill="#8FB8D6"/>
+        <text class="stkI" x="170" y="52">Jupyter notebook</text>
+        <text class="stkX" x="330" y="58" style="fill:#14202B;opacity:.85">the workbench - code, output, and charts in one place</text>
+        <rect x="150" y="90" width="285" height="46" rx="10" fill="#3776AB"/>
+        <text class="stkT" x="170" y="119">matplotlib</text>
+        <text class="stkS" x="270" y="119">the plotting engine</text>
+        <rect x="445" y="90" width="285" height="46" rx="10" fill="#4B8BBE"/>
+        <text class="stkT" x="465" y="119">seaborn</text>
+        <text class="stkS" x="545" y="119">statistical charts, prettier</text>
+        <rect x="150" y="150" width="580" height="52" rx="10" fill="#3776AB"/>
+        <text class="stkT" x="170" y="181">pandas</text>
+        <text class="stkS" x="250" y="181">tables you actually work in - the DataFrame - load, clean, group, join</text>
+        <rect x="150" y="216" width="580" height="52" rx="10" fill="#1E4A73"/>
+        <text class="stkT" x="170" y="247">NumPy</text>
+        <text class="stkS" x="250" y="247">the fast numeric core - arrays and vectorized math under everything above</text>
+        <rect x="150" y="288" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="stkN" x="172" y="300">You'll touch all four this course - bottom to top, one session at a time.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the stack: NumPy at the base, pandas on top, matplotlib + seaborn to see it, Jupyter to hold it all</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why the stack, not one giant library<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Each layer does one thing well and hands off to the next. pandas doesn't reinvent fast math - it sits on NumPy. seaborn doesn't redraw pixels - it drives matplotlib. That separation is why the ecosystem moves fast and why your skills transfer: learn the DataFrame once and it works whether you're plotting, modeling, or exporting.</p>
+        <ul>
+          <li><strong>NumPy</strong> is the base: arrays and vectorized math, thousands of times faster than Python loops (Session 2).</li>
+          <li><strong>pandas</strong> is where you live: labeled tables - the DataFrame - for loading, cleaning, grouping, joining (Sessions 3-5).</li>
+          <li><strong>matplotlib + seaborn</strong> turn tables into pictures (Sessions 6-7).</li>
+          <li><strong>Jupyter</strong> is the workbench: you write a line, run it, see the table or chart immediately - the tight feedback loop that makes analysis feel alive.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Ask an analyst what tool they use and they'll say "pandas" - but every pandas session is quietly standing on NumPy, and every chart they paste into a deck came out of matplotlib. Knowing the stack means when something breaks, you know which layer to look at.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Where the profiling libraries fit<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three small libraries save hours by <em>showing you the mess before you touch it</em> - we install them today and lean on them in Session 4:</p>
+        <table class="clean">
+          <thead><tr><th>Library</th><th>What it gives you</th><th>Used in</th></tr></thead>
+          <tbody>
+            <tr><td>ydata-profiling</td><td>One line -> a full HTML report: every column's distribution, missing %, correlations, warnings</td><td>Session 1 first look</td></tr>
+            <tr><td>missingno</td><td>Visual maps of missingness - matrix, bar, heatmap - so gaps become patterns you can see</td><td>Session 4 cleaning</td></tr>
+            <tr><td>sweetviz</td><td>A prettier profile + easy two-dataset comparison</td><td>Self-study alternative</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <strong>Profile before you fix</strong>
+          The discipline this whole course teaches: look at the data honestly first, decide second. Guessing at cleaning steps before you've seen the shape of the mess is how analyses go wrong quietly.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: WORKSPACE ============ -->
+  <section class="section" id="workspace">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the environment setup</span>
+      <h2>Your workspace, cleanly <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">One isolated environment with everything pinned. Do this once and you never fight version conflicts mid-analysis. We use conda - it handles Python and the scientific packages together.</p>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Create the environment<span class="mini">3 min · then Demo 1</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ Create + activate the analysis environment</span># one environment, everything this course needs, pinned to Python 3.11
+conda create -n data-analysis python=3.11 pandas numpy matplotlib seaborn jupyter scikit-learn -y
+
+# turn it on (do this every time you sit down to work)
+conda activate data-analysis
+
+# the two profiling helpers live on pip
+pip install ydata-profiling missingno sweetviz</div>
+        <p>An <strong>environment</strong> is a sealed box of package versions. Naming it after the project (<code>data-analysis</code>) means next month's project gets its own box and nothing collides. If you prefer plain <code>venv</code> and <code>pip</code>, that works too - the package list is the same.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Launch Jupyter and sanity-check<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="prompt-box good"><span class="label">★ Start the workbench</span># from your project folder, with the env active:
+jupyter lab
+# a browser tab opens - make a new notebook, then run this in the first cell:</div>
+        <div class="prompt-box good"><span class="label">★ First cell - prove the stack is alive</span>import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+print("pandas", pd.__version__)
+print("numpy", np.__version__)
+# no errors = you're ready</div>
+        <div class="callout tip">
+          <strong>pd, np, plt, sns</strong>
+          These four import aliases are universal - every tutorial, every Stack Overflow answer uses them. Type them enough this week that they become muscle memory.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Notebook habits that keep you sane<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Run top to bottom before you trust it.</strong> Out-of-order cells lie. Restart kernel + Run All is your reality check.</li>
+          <li><strong>One idea per cell.</strong> Small cells make it obvious which line broke and let you re-run cheaply.</li>
+          <li><strong>Keep the raw file untouched.</strong> Never overwrite the CSV you downloaded - load it, transform a copy, save outputs under new names. Your ground truth stays clean.</li>
+          <li><strong>Markdown cells are free.</strong> A one-line note above a block ("parsing salary into a number") turns a notebook into something future-you can read.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: THE WORKFLOW ============ -->
+  <section class="section" id="workflow">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers the analysis lifecycle</span>
+      <h2>The analysis workflow <span class="tag concept">3 min live</span></h2>
+    </div>
+    <p class="lede">Every real analysis walks the same six steps. This course is those steps, one per session block - so the skill you build is the workflow itself, not just the syntax.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The six-step analysis workflow: load, profile, clean, explore, visualize, report">
+        <style>
+          .wfT { font: 700 13.5px Inter, sans-serif; fill: #FFFFFF; }
+          .wfX { font: 400 12px Inter, sans-serif; fill: #5A6B78; }
+          .wfN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+          .wfA { stroke: #B8C4CE; stroke-width: 2; fill: none; marker-end: url(#wfAh); }
+        </style>
+        <defs>
+          <marker id="wfAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#B8C4CE" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="18" y="55" width="118" height="46" rx="10" fill="#1E4A73"/>
+        <text class="wfT" x="46" y="83">1 · Load</text>
+        <rect x="157" y="55" width="118" height="46" rx="10" fill="#3776AB"/>
+        <text class="wfT" x="182" y="83">2 · Profile</text>
+        <rect x="296" y="55" width="118" height="46" rx="10" fill="#3776AB"/>
+        <text class="wfT" x="325" y="83">3 · Clean</text>
+        <rect x="435" y="55" width="118" height="46" rx="10" fill="#4B8BBE"/>
+        <text class="wfT" x="458" y="83">4 · Explore</text>
+        <rect x="574" y="55" width="118" height="46" rx="10" fill="#4B8BBE"/>
+        <text class="wfT" x="592" y="83">5 · Visualize</text>
+        <rect x="713" y="55" width="118" height="46" rx="10" fill="#E6A700"/>
+        <text class="wfT" x="741" y="83" style="fill:#14202B">6 · Report</text>
+        <line class="wfA" x1="136" y1="78" x2="153" y2="78"/>
+        <line class="wfA" x1="275" y1="78" x2="292" y2="78"/>
+        <line class="wfA" x1="414" y1="78" x2="431" y2="78"/>
+        <line class="wfA" x1="553" y1="78" x2="570" y2="78"/>
+        <line class="wfA" x1="692" y1="78" x2="709" y2="78"/>
+        <text class="wfX" x="18" y="125">read the</text>
+        <text class="wfX" x="18" y="141">CSVs in</text>
+        <text class="wfX" x="157" y="125">see the mess</text>
+        <text class="wfX" x="157" y="141">honestly</text>
+        <text class="wfX" x="296" y="125">fix types, NAs,</text>
+        <text class="wfX" x="296" y="141">salaries, dupes</text>
+        <text class="wfX" x="435" y="125">group, join,</text>
+        <text class="wfX" x="435" y="141">ask questions</text>
+        <text class="wfX" x="574" y="125">charts that</text>
+        <text class="wfX" x="574" y="141">carry the point</text>
+        <text class="wfX" x="713" y="125">findings + a</text>
+        <text class="wfX" x="713" y="141">model, shared</text>
+        <rect x="18" y="188" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="wfN" x="40" y="200">Sessions map onto these steps: 1 load - 2 numpy - 3 pandas - 4 clean - 5 explore - 6/7 visualize - 8 report.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the six steps every analysis walks, and where each session lands</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The step people skip - and pay for<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Step 2, <strong>profile</strong>, is the one beginners skip and experts never do. Jumping from load straight to charts means you plot dirty data and draw confident wrong conclusions. Ten minutes profiling saves ten hours of "wait, why is the average salary $2 million?" (answer: three rows had salary in cents, and you never looked).</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A classic job-market analysis went viral for claiming a median data-science salary far above reality. The cause: the dataset mixed hourly, monthly, and yearly pay in one column and nobody profiled it. Correct step 2, correct headline. Skip it, mislead thousands.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 4: THE PROJECT ============ -->
+  <section class="section" id="the-project">
+    <div class="section-kicker">
+      <span class="klabel">Part 4 · the running project</span>
+      <h2>One dataset, eight sessions <span class="tag concept">2 min live</span></h2>
+    </div>
+    <p class="lede">The whole course is one build. No toy tables - by Session 8 you've produced a real report on a real labor market, from a dataset with real problems.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The eight-session roadmap from setup to shareable report">
+        <style>
+          .rmT { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .rmX { font: 400 11.5px Inter, sans-serif; fill: #5A6B78; }
+          .rmA { stroke: #B8C4CE; stroke-width: 2; fill: none; marker-end: url(#rmAh); }
+        </style>
+        <defs>
+          <marker id="rmAh" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none" stroke="#B8C4CE" stroke-width="1.5"/>
+          </marker>
+        </defs>
+        <rect x="14" y="52" width="98" height="44" rx="9" fill="#1E4A73"/>
+        <text class="rmT" x="34" y="79">1 · Setup</text>
+        <rect x="122" y="52" width="98" height="44" rx="9" fill="#3776AB"/>
+        <text class="rmT" x="140" y="79">2 · NumPy</text>
+        <rect x="230" y="52" width="98" height="44" rx="9" fill="#3776AB"/>
+        <text class="rmT" x="246" y="79">3 · pandas</text>
+        <rect x="338" y="52" width="98" height="44" rx="9" fill="#4B8BBE"/>
+        <text class="rmT" x="356" y="79">4 · Clean</text>
+        <rect x="446" y="52" width="98" height="44" rx="9" fill="#4B8BBE"/>
+        <text class="rmT" x="462" y="79">5 · Explore</text>
+        <rect x="554" y="52" width="98" height="44" rx="9" fill="#4B8BBE"/>
+        <text class="rmT" x="566" y="79">6 · Matplotlib</text>
+        <rect x="662" y="52" width="98" height="44" rx="9" fill="#4B8BBE"/>
+        <text class="rmT" x="680" y="79">7 · Seaborn</text>
+        <rect x="770" y="52" width="98" height="44" rx="9" fill="#E6A700"/>
+        <text class="rmT" x="788" y="79" style="fill:#14202B">8 · Report</text>
+        <line class="rmA" x1="112" y1="74" x2="119" y2="74"/>
+        <line class="rmA" x1="220" y1="74" x2="227" y2="74"/>
+        <line class="rmA" x1="328" y1="74" x2="335" y2="74"/>
+        <line class="rmA" x1="436" y1="74" x2="443" y2="74"/>
+        <line class="rmA" x1="544" y1="74" x2="551" y2="74"/>
+        <line class="rmA" x1="652" y1="74" x2="659" y2="74"/>
+        <line class="rmA" x1="760" y1="74" x2="767" y2="74"/>
+        <text class="rmX" x="14" y="124">load 124k</text>
+        <text class="rmX" x="14" y="140">postings</text>
+        <text class="rmX" x="122" y="124">fast arrays</text>
+        <text class="rmX" x="122" y="140">under pandas</text>
+        <text class="rmX" x="230" y="124">select,</text>
+        <text class="rmX" x="230" y="140">filter</text>
+        <text class="rmX" x="338" y="124">NAs, dtypes,</text>
+        <text class="rmX" x="338" y="140">salary parse</text>
+        <text class="rmX" x="446" y="124">groupby,</text>
+        <text class="rmX" x="446" y="140">join tables</text>
+        <text class="rmX" x="554" y="124">plot the</text>
+        <text class="rmX" x="554" y="140">market</text>
+        <text class="rmX" x="662" y="124">polish +</text>
+        <text class="rmX" x="662" y="140">stats charts</text>
+        <text class="rmX" x="770" y="124">findings +</text>
+        <text class="rmX" x="770" y="140">salary model</text>
+        <text class="rmX" x="14" y="182">Missed a session? Each page stands alone, and the dataset is one download away - jump back in at any step.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the roadmap: one dataset carried from raw download to shareable report</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>The dataset and the deliverable<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>We use <strong>LinkedIn Job Postings (2023-2024)</strong> from Kaggle - about 124,000 postings across several linked tables (postings, companies, skills, salaries). It's genuinely messy: roughly 70% of postings have no salary, pay is split across min/max/period columns, job titles are free text, and there are duplicates. That mess is not a bug - it's the curriculum.</p>
+        <ul>
+          <li><strong>The question:</strong> what does the data / analytics / AI job market look like - which roles, which skills, what pay, where?</li>
+          <li><strong>The deliverable (Session 8):</strong> a tight report - five charts, five findings, and a simple model that predicts salary from role and location - clean enough to post on LinkedIn with your name on it.</li>
+        </ul>
+        <div class="callout tip">
+          <strong>Get the data before next session</strong>
+          Download it in Demo 2's steps. It's free with a Kaggle account. If versions have shifted, the column names in later sessions still map - we profile first every time.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Environment + Jupyter, live <span class="tag demo">★ 8 min · everyone sets up</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Run the Part 2 create command. While it resolves (a minute or two), make a project folder: <code>mkdir data-job-market &amp;&amp; cd data-job-market</code>.</p></div>
+      <div class="step"><p><code>conda activate data-analysis</code>, then <code>pip install ydata-profiling missingno sweetviz</code>.</p></div>
+      <div class="step"><p><code>jupyter lab</code> - a browser tab opens. New notebook, rename it <code>01-first-look.ipynb</code>.</p></div>
+      <div class="step"><p>Run the Part 2 "prove the stack is alive" cell. Two version numbers, no errors - you're operational.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>Install stuck or slow?</strong>
+      conda solving can be slow on older machines. Keep going in a neighbor's notebook or use <code>pip install</code> for everything - fix conda after class. Today's win is the first look, not the plumbing.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>Load the data, take the first look <span class="tag demo">★ 10 min · everyone loads</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Download the dataset from Kaggle (<a href="https://www.kaggle.com/datasets/arshkon/linkedin-job-postings">kaggle.com/datasets/arshkon/linkedin-job-postings</a>), unzip it into your project folder.</p></div>
+      <div class="step"><p>Load the main table and look at its shape and first rows:</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Load + first look</span>import pandas as pd
+
+jobs = pd.read_csv("postings.csv")
+
+jobs.shape          # (rows, columns) - how big is this thing?
+jobs.head()         # first 5 rows - what do the columns look like?
+jobs.columns.tolist()   # the full column list</div>
+    <div class="prompt-box good"><span class="label">★ The three questions every dataset answers</span>jobs.info()         # dtypes + non-null counts per column -> where are the gaps?
+jobs.describe()      # summary stats for numeric columns
+jobs.isna().mean().sort_values(ascending=False).head(10)   # % missing, worst columns first</div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>Watch what <code>isna().mean()</code> shows: the salary columns light up near 70% missing. You haven't written a cleaning line yet and the data has already told you its biggest problem. That's the whole point of looking first - the dataset briefs you if you let it.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>One-line automated profile <span class="tag demo">★ 4 min · follow along</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Let ydata-profiling do in one line what would take an hour by hand:</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Full profile report</span>from ydata_profiling import ProfileReport
+
+# sample for speed on 124k rows - full run works too, just slower
+report = ProfileReport(jobs.sample(5000, random_state=42), title="LinkedIn jobs - first profile", minimal=True)
+report.to_notebook_iframe()     # renders inline in Jupyter
+# or: report.to_file("first-profile.html")  # a shareable HTML file</div>
+    <div class="steps">
+      <div class="step"><p>Scroll the report: distributions, missing-value counts, correlations, and a "Warnings" tab that flags high-cardinality and missing columns for you.</p></div>
+      <div class="step"><p>Write one markdown cell: <strong>the three things this profile tells me about the data</strong>. That note is your cleaning to-do list for Session 4.</p></div>
+    </div>
+    <div class="callout tip">
+      <strong>random_state=42</strong>
+      Pinning the seed means your sample - and everyone else's - is identical and reproducible. Every analysis in this course sets a seed. Reproducible or it didn't happen.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 30 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Finish the setup</strong> if the session ran short - environment created, Jupyter launching, dataset downloaded. This gates Session 2.</li>
+      <li><strong>Load every table</strong> in the dataset (not just postings.csv) and run <code>.shape</code> + <code>.head()</code> on each. Note which tables share an ID column - that's the Session 5 join, previewed.</li>
+      <li><strong>Generate a full profile</strong> (drop <code>minimal=True</code>, run on the whole frame) and save it as HTML. Read it end to end once.</li>
+      <li><strong>Write your three observations</strong> in a markdown cell. Bring them - Session 4 turns them into cleaning code.</li>
+      <li><strong>Optional:</strong> skim Kaggle's free "Pandas" micro-course lesson 1 - this session covered its ground, but the exercises are good reps.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">1 · In the analysis stack, what sits at the base, under pandas?</p>
+      <button class="qopt" type="button">A · matplotlib</button>
+      <button class="qopt" type="button">B · Jupyter</button>
+      <button class="qopt" type="button">C · NumPy - the fast numeric core</button>
+      <p class="qwhy">pandas is built on NumPy arrays. Learn the base and everything above it makes more sense - that's Session 2.</p>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">2 · Why profile the data (step 2) before cleaning or charting?</p>
+      <button class="qopt" type="button">A · It's required by pandas</button>
+      <button class="qopt" type="button">B · So you see the mess honestly and don't draw confident wrong conclusions from dirty data</button>
+      <button class="qopt" type="button">C · It makes the notebook run faster</button>
+      <p class="qwhy">Skip the look and you plot dirty data. Ten minutes profiling saves ten hours of chasing a wrong headline.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What did <code>isna().mean()</code> reveal about the LinkedIn dataset?</p>
+      <button class="qopt" type="button">A · Salary columns are ~70% missing - the biggest problem, spotted before writing any cleaning code</button>
+      <button class="qopt" type="button">B · The data is perfectly clean</button>
+      <button class="qopt" type="button">C · There are no numeric columns</button>
+      <p class="qwhy">The dataset briefs you if you let it. Missing salary is the mess Session 4 tackles head-on.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ OFFICIAL SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the working content of the official pandas and NumPy docs, the free Kaggle micro-courses, and Wes McKinney's open-access <a href="https://wesmckinney.com/book/">Python for Data Analysis (3e)</a>. Certificates, graded exercises, and videos stay on those platforms - links provided.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Environment + Jupyter setup (pandas / conda docs)</span><span class="note">create env, launch Jupyter, import aliases - Part 2 + Demo 1</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Kaggle Pandas L1 - Creating, Reading and Writing</span><span class="note">read_csv, shape, head - Demo 2</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">McKinney ch1-2 - Preliminaries, IPython &amp; Jupyter</span><span class="note">the stack, the notebook workflow - Parts 1-2</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">ydata-profiling quickstart</span><span class="note">ProfileReport, minimal mode, to_file - Demo 3</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">McKinney ch6 - Data Loading, Storage, File Formats</span><span class="note">read_csv here; full IO options in Sessions 4-5</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 1 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The stack</b><span>NumPy (base) -> pandas (tables) -> matplotlib + seaborn (charts) -> Jupyter (workbench). Bottom to top.</span></div>
+      <div class="cheat-item"><b>Set up</b><span>conda create -n data-analysis python=3.11 pandas numpy matplotlib seaborn jupyter scikit-learn; then conda activate + jupyter lab.</span></div>
+      <div class="cheat-item"><b>Imports</b><span>import pandas as pd, numpy as np; import matplotlib.pyplot as plt, seaborn as sns. Universal aliases.</span></div>
+      <div class="cheat-item"><b>Load</b><span>df = pd.read_csv("file.csv") - then df.shape, df.head(), df.columns.tolist().</span></div>
+      <div class="cheat-item"><b>First look</b><span>df.info() for dtypes + nulls · df.describe() for numeric stats · df.isna().mean() for % missing.</span></div>
+      <div class="cheat-item"><b>Profile first</b><span>ProfileReport(df.sample(5000, random_state=42)).to_notebook_iframe(). Look before you fix.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 1 of 8 · learn-python-data-analysis-with-phoebe · by Phoebe Fu</span>
+    <span><a href="../index.html">← All sessions</a> &nbsp;·&nbsp; <a href="02-numpy-foundations.html">Next: NumPy foundations →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

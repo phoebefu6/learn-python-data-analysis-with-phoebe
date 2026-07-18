@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session 3 · pandas core - learn python data analysis with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-python-data-analysis-with-phoebe</a> / Session 3 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn Python Data Analysis with Phoebe · Session 3 of 8</div>
+    <h1>pandas <span class="accent">core</span></h1>
+    <p class="sub">The DataFrame is your home for the rest of this course. Today you learn to move around it with confidence - select rows and columns, filter with real conditions, and compute summaries - all on the 124,000 LinkedIn postings. By the end you'll answer your first genuine question of the data: which job titles and locations show up most.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Moderate</span>
+      <span class="chip audience">Builders</span>
+      <span class="chip audience">The DataFrame</span>
+      <span class="chip time">45 min live + self-study</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:3">3-18 · Concepts</span>
+      <span class="a3" style="flex:5">18-40 · Answer a question</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>The DataFrame is home base</h2>
+    </div>
+    <p class="lede">Session 2 gave you the NumPy array - one typed block of numbers. A pandas <strong>DataFrame</strong> is what you get when you give those arrays names, an index, and the ability to sit side by side in a table. It is where every remaining session lives: cleaning, grouping, joining, charting, and modeling all happen on the DataFrame. Get fluent moving around it and everything downstream gets easier. Everything today builds directly on the boolean masks and dtypes you just learned - pandas simply wraps them in labels.</p>
+    <div class="legend">
+      <span class="pill solid">Live - presented in session</span>
+      <span class="pill light">Self-study - read after class</span>
+      <span class="pill amber">★ Build-along demo</span>
+      <span class="pill inkpill">The project: the data job market</span>
+    </div>
+    <div class="callout win">
+      <strong>★ What you walk out with today</strong>
+      The confidence to select any rows or columns you want, filter the LinkedIn postings with real conditions (salary above a threshold, remote roles, title contains "data"), and compute quick summaries - <code>value_counts</code>, <code>describe</code>, <code>nunique</code> - to answer "what are the top job titles and hiring locations?"
+    </div>
+  </section>
+
+  <!-- ============ PART 1: SERIES & DATAFRAME ============ -->
+  <section class="section" id="structures">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers Kaggle Pandas L1 + McKinney ch5</span>
+      <h2>Series and DataFrame <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">Two structures, and the second is just many of the first stacked together. A <strong>Series</strong> is one labeled column: an index plus its values. A <strong>DataFrame</strong> is a dict of Series that all share one index - which is why columns line up row-for-row even after you filter or sort them.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anatomy of a DataFrame: an index down the left, named columns across the top, values in the grid, each column a Series with its own dtype">
+        <style>
+          .pdaT { font: 700 14px Inter, sans-serif; fill: #14202B; }
+          .pdaH { font: 700 13px Inter, sans-serif; fill: #FFFFFF; }
+          .pdaV { font: 400 12.5px Inter, sans-serif; fill: #14202B; }
+          .pdaX { font: 400 12px Inter, sans-serif; fill: #5A6B78; }
+          .pdaL { font: 700 12px Inter, sans-serif; fill: #1E4A73; }
+          .pdaN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <text class="pdaT" x="20" y="30">A DataFrame - named columns sharing one index</text>
+
+        <!-- header row -->
+        <rect x="90" y="50" width="150" height="38" fill="#1E4A73"/>
+        <rect x="240" y="50" width="180" height="38" fill="#3776AB"/>
+        <rect x="420" y="50" width="150" height="38" fill="#4B8BBE"/>
+        <text class="pdaH" x="110" y="74">title</text>
+        <text class="pdaH" x="260" y="74">location</text>
+        <text class="pdaH" x="440" y="74">salary</text>
+
+        <!-- index col -->
+        <rect x="20" y="88" width="70" height="34" fill="#EAF1F7"/>
+        <rect x="20" y="122" width="70" height="34" fill="#EAF1F7"/>
+        <rect x="20" y="156" width="70" height="34" fill="#EAF1F7"/>
+        <text class="pdaL" x="40" y="110">0</text>
+        <text class="pdaL" x="40" y="144">1</text>
+        <text class="pdaL" x="40" y="178">2</text>
+
+        <!-- rows -->
+        <rect x="90" y="88" width="150" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <rect x="240" y="88" width="180" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <rect x="420" y="88" width="150" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <text class="pdaV" x="102" y="110">Data Analyst</text>
+        <text class="pdaV" x="252" y="110">New York, NY</text>
+        <text class="pdaV" x="432" y="110">95000</text>
+
+        <rect x="90" y="122" width="150" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <rect x="240" y="122" width="180" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <rect x="420" y="122" width="150" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <text class="pdaV" x="102" y="144">ML Engineer</text>
+        <text class="pdaV" x="252" y="144">Remote</text>
+        <text class="pdaV" x="432" y="144">160000</text>
+
+        <rect x="90" y="156" width="150" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <rect x="240" y="156" width="180" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <rect x="420" y="156" width="150" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <text class="pdaV" x="102" y="178">Data Scientist</text>
+        <text class="pdaV" x="252" y="178">Austin, TX</text>
+        <text class="pdaV" x="432" y="178">NaN</text>
+
+        <text class="pdaX" x="20" y="212">index (row labels)</text>
+        <text class="pdaX" x="240" y="212">each column is a Series with its own dtype (object, object, float64)</text>
+
+        <!-- pulled-out series -->
+        <text class="pdaT" x="620" y="30">One column = a Series</text>
+        <rect x="620" y="50" width="150" height="38" fill="#4B8BBE"/>
+        <text class="pdaH" x="640" y="74">salary</text>
+        <rect x="620" y="88" width="150" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <rect x="620" y="122" width="150" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <rect x="620" y="156" width="150" height="34" fill="#FFFFFF" stroke="#B8C4CE"/>
+        <text class="pdaV" x="632" y="110">95000</text>
+        <text class="pdaV" x="632" y="144">160000</text>
+        <text class="pdaV" x="632" y="178">NaN</text>
+        <text class="pdaX" x="620" y="212">index + values,</text>
+        <text class="pdaX" x="620" y="228">one dtype</text>
+
+        <rect x="20" y="284" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="pdaN" x="42" y="296">The shared index is the glue - it's why filtering one column keeps every other column aligned.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - a DataFrame's anatomy, and a single column pulled out as a Series</figcaption>
+    </figure>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Series: a labeled array<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A Series is a NumPy array (from Session 2) with an <strong>index</strong> bolted on. The values still have a single dtype and still support vectorized math and boolean masks - you've just gained labels, so you can ask for an element by name, not only by position.</p>
+        <div class="prompt-box good"><span class="label">★ Make a Series</span>import pandas as pd
+
+pay = pd.Series([95000, 160000, None], index=["analyst", "ml_eng", "ds"])
+pay["ml_eng"]        # 160000.0 - fetch by label
+pay.mean()           # skips the missing value automatically
+pay > 100000         # boolean mask - same as NumPy, now labeled</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>When you run <code>jobs["title"]</code> on the LinkedIn data, you get a Series of 124,000 titles with the row index preserved. That preserved index is what lets you filter to "remote roles" and still line those rows up against their salaries and companies later - nothing drifts out of order.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>DataFrame: aligned columns<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You'll rarely build a DataFrame by hand - <code>read_csv</code> does it for you - but seeing the dict-of-Series construction demystifies it. Every column shares the same index, so pandas can align them automatically even after reordering.</p>
+        <div class="prompt-box good"><span class="label">★ DataFrame from a dict of columns</span>df = pd.DataFrame({
+    "title":    ["Data Analyst", "ML Engineer", "Data Scientist"],
+    "location": ["New York, NY", "Remote", "Austin, TX"],
+    "salary":   [95000, 160000, None],
+})
+df.shape        # (3, 3)
+df.dtypes       # object, object, float64 - one dtype per column
+df.index        # RangeIndex(start=0, stop=3) - the shared index</div>
+        <div class="callout tip">
+          <strong>The index is not a column</strong>
+          The index labels the rows; it sits to the left of your data. Beginners often try to select it like a column and get confused. Reach the index with <code>df.index</code>, and reset it to a plain column with <code>df.reset_index()</code> when you need it as data.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2: SELECTING ============ -->
+  <section class="section" id="selecting">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers pandas Indexing and selecting data</span>
+      <h2>Selecting: loc, iloc, and columns <span class="tag concept">5 min live</span></h2>
+    </div>
+    <p class="lede">This is the one thing every pandas beginner trips on, so we slow down. There are two ways to pull rows out: <code>.loc</code> works by <strong>label</strong>, <code>.iloc</code> works by <strong>integer position</strong>. Confuse them and you either get an error or, worse, the wrong rows silently.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two lanes comparing loc which selects by label against iloc which selects by integer position">
+        <style>
+          .pdbT { font: 700 14px Inter, sans-serif; fill: #FFFFFF; }
+          .pdbH { font: 700 14px Inter, sans-serif; fill: #14202B; }
+          .pdbC { font: 600 12.5px 'Courier New', monospace; fill: #14202B; }
+          .pdbX { font: 400 12px Inter, sans-serif; fill: #5A6B78; }
+          .pdbN { font: 400 12px Inter, sans-serif; fill: #3A2E00; }
+        </style>
+        <rect x="20" y="30" width="410" height="44" rx="10" fill="#1E4A73"/>
+        <text class="pdbT" x="40" y="58">.loc  -  by LABEL</text>
+        <rect x="450" y="30" width="410" height="44" rx="10" fill="#4B8BBE"/>
+        <text class="pdbT" x="470" y="58">.iloc  -  by integer POSITION</text>
+
+        <rect x="20" y="86" width="410" height="120" rx="10" fill="#EAF1F7"/>
+        <text class="pdbC" x="40" y="116">df.loc[0, "salary"]</text>
+        <text class="pdbX" x="40" y="138">the row LABELED 0, column named "salary"</text>
+        <text class="pdbC" x="40" y="166">df.loc[df["remote"], :]</text>
+        <text class="pdbX" x="40" y="188">boolean mask allowed - filter by condition</text>
+
+        <rect x="450" y="86" width="410" height="120" rx="10" fill="#EAF1F7"/>
+        <text class="pdbC" x="470" y="116">df.iloc[0, 3]</text>
+        <text class="pdbX" x="470" y="138">the FIRST row, the 4th column (0-based)</text>
+        <text class="pdbC" x="470" y="166">df.iloc[0:5, 0:2]</text>
+        <text class="pdbX" x="470" y="188">first 5 rows, first 2 columns - like NumPy</text>
+
+        <rect x="20" y="224" width="14" height="14" rx="3" fill="#E6A700"/>
+        <text class="pdbN" x="42" y="236">Rule of thumb: loc reads like a name, iloc reads like a counter. Masks go with loc.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - loc selects by label, iloc selects by integer position</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Columns first, then loc vs iloc<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Selecting a <strong>column</strong> is the everyday move: <code>df["salary"]</code> returns a Series, and a list of names <code>df[["title", "salary"]]</code> returns a smaller DataFrame. Note the double brackets - a list inside the brackets - whenever you want more than one column back as a table.</p>
+        <div class="prompt-box good"><span class="label">★ Columns, then rows two ways</span>df["salary"]                 # one column -> a Series
+df[["title", "salary"]]      # a list of columns -> a DataFrame
+
+df.loc[0, "salary"]          # label-based: row labeled 0, salary column
+df.iloc[0, 3]                # position-based: 1st row, 4th column
+
+df.loc[0:4, ["title", "salary"]]   # loc slice is INCLUSIVE of 4
+df.iloc[0:5, 0:2]                  # iloc slice EXCLUDES 5 (like Python)</div>
+        <div class="callout tip">
+          <strong>The gotcha that bites everyone</strong>
+          <code>.loc</code> slices are inclusive of the end label; <code>.iloc</code> slices exclude the end position, just like normal Python. <code>df.loc[0:4]</code> gives five rows; <code>df.iloc[0:4]</code> gives four. When in doubt, print the shape.
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The selection pattern table<span class="mini">2 min read</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <table class="clean">
+          <thead><tr><th>You want</th><th>Write</th><th>Returns</th></tr></thead>
+          <tbody>
+            <tr><td>One column</td><td>df["salary"]</td><td>Series</td></tr>
+            <tr><td>Several columns</td><td>df[["title", "salary"]]</td><td>DataFrame</td></tr>
+            <tr><td>One cell by label</td><td>df.loc[10, "salary"]</td><td>a scalar</td></tr>
+            <tr><td>Rows + cols by label</td><td>df.loc[0:4, ["title"]]</td><td>DataFrame (end inclusive)</td></tr>
+            <tr><td>Rows + cols by position</td><td>df.iloc[0:5, 0:2]</td><td>DataFrame (end excluded)</td></tr>
+            <tr><td>Rows matching a condition</td><td>df.loc[df["remote"]]</td><td>filtered DataFrame</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 3: FILTERING & SUMMARY ============ -->
+  <section class="section" id="filtering">
+    <div class="section-kicker">
+      <span class="klabel">Part 3 · covers Kaggle Pandas L2-L3 + McKinney ch5</span>
+      <h2>Filtering, summaries, and maps <span class="tag concept">4 min live</span></h2>
+    </div>
+    <p class="lede">Now the payoff. Filtering is the Session 2 boolean mask, now on a DataFrame. Summary functions collapse a column to an answer. And <code>map</code>/<code>apply</code> transform a column into a new one. Put them together and you can interrogate the LinkedIn data.</p>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Boolean filtering - and the parentheses rule<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Pass a boolean mask into the brackets and pandas keeps only the rows where it's <code>True</code>. Combine conditions with <code>&amp;</code> (and) and <code>|</code> (or) - never Python's <code>and</code>/<code>or</code> - and <strong>wrap each condition in parentheses</strong>, because <code>&amp;</code> binds tighter than <code>&gt;</code> and will misfire without them.</p>
+        <div class="prompt-box good"><span class="label">★ Filter with combined conditions</span># each condition in its own parentheses, joined by &amp; / |
+high_remote = df[(df["salary"] &gt; 100000) &amp; (df["remote"])]
+
+# "or" example
+di = df[(df["title"].str.contains("Data")) | (df["title"].str.contains("ML"))]
+
+# membership - cleaner than chaining many ==
+big3 = df[df["location"].isin(["New York, NY", "Remote", "Austin, TX"])]</div>
+        <div class="prompt-box bad"><span class="label">Don't - Python and/or on Series raises an error</span>df[df["salary"] &gt; 100000 and df["remote"]]   # ValueError: ambiguous truth value
+# use  &amp;  with parentheses, not  and</div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Summary functions + map/apply<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Summary functions turn a column into an answer: <code>.mean()</code>, <code>.describe()</code> (a whole stats block at once), <code>.unique()</code> and <code>.nunique()</code> (distinct values and how many), and the analyst's favorite, <code>.value_counts()</code>, which tallies each distinct value sorted from most to least common.</p>
+        <div class="prompt-box good"><span class="label">★ Summaries + a derived column</span>df["title"].value_counts().head(10)   # top 10 job titles by frequency
+df["salary"].describe()                # count, mean, std, min, quartiles, max
+df["location"].nunique()               # how many distinct locations?
+
+# map/apply build a new column from an old one
+df["remote"] = df["location"].map(lambda x: x == "Remote")
+df["pay_band"] = df["salary"].apply(lambda s: "high" if s &gt; 120000 else "standard")</div>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Run <code>value_counts</code> on the LinkedIn <code>title</code> column and you meet the dataset's messiest reality: "Data Analyst", "Data analyst", "Sr. Data Analyst", and "Data Analyst II" all count separately. Seeing that tally is the moment you understand why Session 4 spends real time normalizing titles - the counts lie until you clean them.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO 1 ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Demo 1 of 3</span>
+      <h2>Load and build a working subset <span class="tag demo">★ 8 min · everyone builds</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Load <code>postings.csv</code>, then cut it down to the columns we actually care about this session.</p></div>
+      <div class="step"><p>Inspect the subset: dtypes and head. Then practice iloc vs loc on it live.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Load + subset the columns</span>import pandas as pd
+
+jobs = pd.read_csv("postings.csv")
+
+cols = ["title", "company_name", "location", "max_salary", "min_salary", "pay_period"]
+work = jobs[cols].copy()      # .copy() so we don't touch the raw frame
+
+work.dtypes      # what type is each column? salary numeric, title object
+work.head()      # eyeball the first five rows</div>
+    <div class="prompt-box good"><span class="label">★ iloc vs loc, side by side</span>work.iloc[0]                 # the FIRST row, by position -> a Series
+work.loc[0]                  # the row LABELED 0 - same here, since index is 0..N
+
+work.iloc[0:5, 0:3]          # first 5 rows, first 3 cols (end excluded)
+work.loc[0:4, ["title", "location"]]   # rows 0..4 inclusive, named cols</div>
+    <div class="callout tip">
+      <strong>Always .copy() a subset you'll modify</strong>
+      Slicing without <code>.copy()</code> can trigger pandas' "SettingWithCopyWarning" when you later assign into it. Copying up front keeps the raw frame pristine (a Session 1 habit) and silences the warning.
+    </div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section class="section" id="demo-2">
+    <div class="section-kicker">
+      <span class="klabel">Demo 2 of 3</span>
+      <h2>Filter to data roles, count the leaders <span class="tag demo">★ 8 min · everyone builds</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>This is the first real "answer a question" moment. Filter the postings down to data / analytics / AI roles by matching the title text.</p></div>
+      <div class="step"><p>Then <code>value_counts</code> the top titles and top locations in that slice.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Filter by title text, then count</span># case-insensitive match on the messy free-text title
+mask = work["title"].str.contains("data|analyst|machine learning|ml ",
+                                  case=False, na=False)
+data_jobs = work[mask]
+
+data_jobs.shape                          # how many data-ish postings?
+data_jobs["title"].value_counts().head(10)     # top 10 titles
+data_jobs["location"].value_counts().head(10)  # top 10 hiring locations</div>
+    <div class="callout example">
+      <span class="ex-pill">Real world</span>
+      <p>The <code>na=False</code> matters: some titles are missing, and without it <code>str.contains</code> returns <code>NaN</code> for those rows and the mask breaks. This is the everyday texture of real data work - a tiny flag that separates code that runs from code that errors on row 5,000. You'll hit this exact pattern all course long.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section class="section" id="demo-3">
+    <div class="section-kicker">
+      <span class="klabel">Demo 3 of 3</span>
+      <h2>Build a derived column <span class="tag demo">★ 5 min · follow along</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p>Create a new column from existing ones and assign it back with <code>df["newcol"] = ...</code>. We'll flag remote roles.</p></div>
+    </div>
+    <div class="prompt-box good"><span class="label">★ Derive and assign a new column</span># flag remote roles from the location text
+work["is_remote"] = work["location"].str.contains("remote", case=False, na=False)
+
+work["is_remote"].value_counts()     # how many remote vs on-site?
+
+# bucket a numeric column with apply
+work["pay_band"] = work["max_salary"].apply(
+    lambda s: "high" if s &gt; 120000 else "standard"
+)
+work[["title", "is_remote", "pay_band"]].head()</div>
+    <div class="callout tip">
+      <strong>Vectorized beats apply when you can</strong>
+      <code>str.contains(...)</code> is vectorized and fast (it's NumPy underneath - Session 2). <code>.apply(lambda ...)</code> loops row by row in Python, so save it for logic that has no vectorized form. On 124k rows the difference is noticeable.
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">After the session</span>
+      <h2>This week <span class="tag exercise">◐ 40 min total</span></h2>
+    </div>
+    <ul>
+      <li><strong>Do Kaggle Pandas lessons 1-3</strong> exercises (Creating/Reading/Writing, Indexing &amp; Selecting, Summary Functions &amp; Maps). They're free and mirror today exactly.</li>
+      <li><strong>Answer the headline question on the real data:</strong> what are the <em>top 10 job titles</em> and the <em>top 10 hiring locations</em> across all postings? Save the two <code>value_counts</code> outputs - Session 6 will chart them.</li>
+      <li><strong>Practice loc vs iloc</strong> until it's automatic: pull the same three cells three different ways and confirm they match.</li>
+      <li><strong>Filter twice:</strong> once with a numeric threshold on salary, once combining two conditions with <code>&amp;</code> and parentheses. Print the shape each time.</li>
+      <li><strong>Read McKinney ch5</strong> (Getting Started with pandas) - the canonical, free, open-access reference for everything today.</li>
+    </ul>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions before you go 🎯 <span class="tag exercise">◐ 90 seconds</span></h2>
+    </div>
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">1 · What's the difference between <code>.loc</code> and <code>.iloc</code>?</p>
+      <button class="qopt" type="button">A · loc is faster; iloc is slower but safer</button>
+      <button class="qopt" type="button">B · loc selects by label; iloc selects by integer position</button>
+      <button class="qopt" type="button">C · loc is for columns; iloc is for rows</button>
+      <p class="qwhy">loc reads like a name (row labeled 0), iloc reads like a counter (the first row). Boolean masks go with loc.</p>
+    </div>
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">2 · How do you keep rows where salary &gt; 100000 AND the role is remote?</p>
+      <button class="qopt" type="button">A · df[df.salary &gt; 100000 and df.remote]</button>
+      <button class="qopt" type="button">B · df[df.salary &gt; 100000, df.remote]</button>
+      <button class="qopt" type="button">C · df[(df.salary &gt; 100000) &amp; (df.remote)] - parentheses around each condition, joined by &amp;</button>
+      <p class="qwhy">On Series you use <code>&amp;</code> / <code>|</code>, not Python's and/or, and each condition needs its own parentheses because <code>&amp;</code> binds tightly.</p>
+    </div>
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">3 · What does <code>value_counts()</code> do?</p>
+      <button class="qopt" type="button">A · Counts occurrences of each unique value, sorted most to least common - great for categorical columns</button>
+      <button class="qopt" type="button">B · Counts the total number of rows in the DataFrame</button>
+      <button class="qopt" type="button">C · Adds up all the numbers in a column</button>
+      <p class="qwhy">It's the fastest way to see the shape of a categorical column - and on the messy title column it also reveals why cleaning is coming in Session 4.</p>
+    </div>
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ OFFICIAL SOURCES ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Source material</span>
+      <h2>Official sources covered</h2>
+    </div>
+    <p class="lede">This session teaches the working content of the free Kaggle Pandas micro-course, the official pandas user guide, and Wes McKinney's open-access <a href="https://wesmckinney.com/book/">Python for Data Analysis (3e)</a>. Certificates and graded exercises stay on those platforms - links provided.</p>
+    <div class="covered">
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">Kaggle Pandas L1-L3</span><span class="note">creating/reading, indexing &amp; selecting, summary functions &amp; maps - all three parts</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">pandas "10 minutes to pandas" + Indexing and selecting data</span><span class="note">Series/DataFrame, loc/iloc, boolean filtering - Parts 1-3</span></div>
+      <div class="covered-row"><span class="status pill solid">✓</span><span class="name">McKinney ch5 - Getting Started with pandas</span><span class="note">the canonical reference for today's structures and selection</span></div>
+      <div class="covered-row"><span class="status pill light">◐</span><span class="name">MultiIndex / hierarchical indexing</span><span class="note">intro only - covered properly with groupby in Session 5</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Session 3 cheat sheet <span>· pin this</span></h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Series vs DataFrame</b><span>Series = one labeled column (index + values, one dtype). DataFrame = dict of Series sharing an index.</span></div>
+      <div class="cheat-item"><b>Column select</b><span>df["col"] -> Series · df[["a","b"]] -> DataFrame (double brackets for a list of columns).</span></div>
+      <div class="cheat-item"><b>loc vs iloc</b><span>df.loc[label, "col"] by label (end inclusive) · df.iloc[pos, n] by integer position (end excluded).</span></div>
+      <div class="cheat-item"><b>Boolean filter</b><span>df[(df.a &gt; x) &amp; (df.b)] - use &amp; | with parentheses around each condition, plus .isin([...]).</span></div>
+      <div class="cheat-item"><b>Summary functions</b><span>value_counts() tallies categories · describe() a stats block · nunique()/unique() distinct values.</span></div>
+      <div class="cheat-item"><b>map / apply + assign</b><span>df["new"] = df["old"].map(fn) or .apply(fn) - build a derived column, then assign it back.</span></div>
+    </div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>Session 3 of 8 · learn-python-data-analysis-with-phoebe · by Phoebe Fu</span>
+    <span><a href="02-numpy-foundations.html">← Prev: NumPy foundations</a> &nbsp;·&nbsp; <a href="04-cleaning-messy-data.html">Next: Cleaning messy data →</a></span>
+  </footer>
+
+</main>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>
