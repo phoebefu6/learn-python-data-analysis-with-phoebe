@@ -1,3 +1,8 @@
+<!-- learn-with-phoebe hub banner -->
+> ### 📚 Part of [**Learn with Phoebe**](https://phoebefu6.github.io/learn-with-phoebe/)
+> The shelf of 20 free, hands-on courses on AI, data, and the craft around them. **[Browse every course ↗](https://phoebefu6.github.io/learn-with-phoebe/)**
+<!-- /learn-with-phoebe hub banner -->
+
 # learn-python-data-analysis-with-phoebe
 
 Decode the data job market, learn real analysis. Eight 45-minute sessions that take one messy real dataset - 124,000 LinkedIn job postings - all the way from raw download to a shareable report. NumPy, pandas, matplotlib, seaborn, and a first machine-learning model, taught as the workflow analysts actually use.
